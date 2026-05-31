@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node node_modules/vite/bin/vite.js build",
+  "buildCommand": "npm run build",
   "builds": [
     { "src": "dist/server/server.js", "use": "@vercel/edge" },
     { "src": "dist/client/**", "use": "@vercel/static" }
