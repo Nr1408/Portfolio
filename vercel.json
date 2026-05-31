@@ -1,12 +1,12 @@
 {
   "version": 2,
+  "buildCommand": "node node_modules/vite/bin/vite.js build",
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/client",
-        "buildCommand": "node node_modules/vite/bin/vite.js build"
+        "distDir": "dist/client"
       }
     }
   ],
