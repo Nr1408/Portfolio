@@ -272,7 +272,7 @@ function Hero() {
         <div className="social-row">
           {/* GitHub */}
           <a
-            href="https://github.com"
+            href="https://github.com/Nr1408"
             target="_blank"
             rel="noopener noreferrer"
             className="social-icon"
@@ -284,7 +284,7 @@ function Hero() {
           </a>
           {/* LinkedIn */}
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/in/nishit-rajput-0a12a5320/"
             target="_blank"
             rel="noopener noreferrer"
             className="social-icon"
@@ -779,7 +779,7 @@ function Contact() {
           </div>
           <div className="social-row reveal" style={{ transitionDelay: '0.2s' }}>
             <a
-              href="https://github.com"
+              href="https://github.com/Nr1408"
               target="_blank"
               rel="noopener noreferrer"
               className="social-icon"
@@ -790,7 +790,7 @@ function Contact() {
               </svg>
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/nishit-rajput-0a12a5320/"
               target="_blank"
               rel="noopener noreferrer"
               className="social-icon"
@@ -809,7 +809,7 @@ function Contact() {
           <span className="footer-copy">&copy; 2025 Nishit Rajput - Built with React &amp; Vite</span>
           <div className="footer-socials">
             <a
-              href="https://github.com"
+              href="https://github.com/Nr1408"
               target="_blank"
               rel="noopener noreferrer"
               className="social-icon"
@@ -821,7 +821,7 @@ function Contact() {
               </svg>
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/nishit-rajput-0a12a5320/"
               target="_blank"
               rel="noopener noreferrer"
               className="social-icon"
