@@ -42,3 +42,4 @@ netlify dev        # starts at http://localhost:8888
 ## Profile Photo
 
 Replace `/public/headshot-on-white.jpg` with your actual headshot. The image is rendered as a 140×140px circle with an animated gradient ring border.
+# portfolio
