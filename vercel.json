@@ -1,12 +1,15 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
   "builds": [
-    { "src": "dist/server/server.js", "use": "@vercel/edge" },
-    { "src": "dist/client/**", "use": "@vercel/static" }
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/client"
+      }
+    }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "dist/server/server.js" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
