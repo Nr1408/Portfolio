@@ -1,7 +1,12 @@
 {
+  "version": 2,
   "buildCommand": "node node_modules/vite/bin/vite.js build",
-  "outputDirectory": "dist/client",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "builds": [
+    { "src": "dist/server/server.js", "use": "@vercel/node" },
+    { "src": "dist/client/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "dist/server/server.js" }
   ]
 }
