@@ -770,10 +770,10 @@ function Achievements() {
 /* Hobbies */
 function Hobbies() {
   const hobbies = [
-    { icon: "football", label: "Football" },
-    { icon: "fitness", label: "Fitness" },
-    { icon: "cycling", label: "Cycling" },
-    { icon: "drawing", label: "Drawing" },
+    { icon: "⚽", label: "Football" },
+    { icon: "💪", label: "Fitness" },
+    { icon: "🚴", label: "Cycling" },
+    { icon: "✏️", label: "Drawing" },
   ];
   return (
     <section
@@ -804,13 +804,7 @@ function Hobbies() {
             className="hobby-chip reveal"
             style={{ transitionDelay: `${i * 0.08}s` }}
           >
-            <span
-              style={{
-                fontSize: "0.95rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-              }}
-            >
+            <span style={{ fontSize: "1.2rem" }} aria-hidden="true">
               {h.icon}
             </span>
             <span>{h.label}</span>
