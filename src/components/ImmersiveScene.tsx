@@ -928,7 +928,7 @@ function HtmlSections() {
           ))}
         </div>
         <div className={surfaceClass("education-block compact", "education-school")} {...surfaceProps("education-school")}>
-          <h3>SKK English High School & Junior College</h3>
+          <h3>SKKES English High School & Junior College</h3>
           <p>Higher Secondary Certificate</p>
           <span>Completed April 2023, Mumbai</span>
         </div>
