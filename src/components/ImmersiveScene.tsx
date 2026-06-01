@@ -77,17 +77,17 @@ const SECTION_IDS = [
 ];
 
 const WAYPOINTS: Vec3[] = [
-  [0, 0, 14],
-  [7.5, 4.5, 6.5],
-  [-6.5, -3.5, 8],
-  [0.5, 7.5, 5.5],
-  [8.5, -5.2, 7.5],
-  [-7.8, 5.5, 10],
-  [5.6, -6.3, 6.2],
-  [0, 0, 20],
+  [0, 0, 13.4],
+  [7.2, 3.7, 5.8],
+  [-6.2, -3.2, 6.4],
+  [0.4, 7.2, 4.8],
+  [8.1, -4.8, 6.2],
+  [-7.4, 5.1, 8.5],
+  [5.2, -5.8, 5.4],
+  [0, 0, 18.5],
 ];
 
-const FOVS = [45, 38, 42, 35, 40, 44, 37, 50];
+const FOVS = [42, 35, 39, 33, 38, 41, 35, 48];
 
 const LIGHT_COLORS: Vec3[] = [
   [0.28, 0.78, 0.9],
@@ -98,6 +98,17 @@ const LIGHT_COLORS: Vec3[] = [
   [0.86, 0.68, 0.34],
   [0.58, 0.48, 0.82],
   [0.28, 0.78, 0.9],
+];
+
+const PORTAL_PALETTE = [
+  { color: "#7dd3fc", accent: "#a5b4fc", tilt: 0.08 },
+  { color: "#a5b4fc", accent: "#7dd3fc", tilt: -0.14 },
+  { color: "#86efac", accent: "#7dd3fc", tilt: 0.2 },
+  { color: "#7dd3fc", accent: "#86efac", tilt: -0.1 },
+  { color: "#93c5fd", accent: "#c4b5fd", tilt: 0.16 },
+  { color: "#fcd34d", accent: "#a5b4fc", tilt: -0.18 },
+  { color: "#c4b5fd", accent: "#86efac", tilt: 0.12 },
+  { color: "#7dd3fc", accent: "#c4b5fd", tilt: 0 },
 ];
 
 function seeded(seed: number) {
@@ -282,15 +293,15 @@ function DynamicLights() {
 
   return (
     <>
-      <ambientLight intensity={0.22} color="#9aa7bd" />
-      <directionalLight position={[5, 8, 6]} intensity={0.45} />
+      <ambientLight intensity={0.18} color="#9aa7bd" />
+      <directionalLight position={[5, 8, 6]} intensity={0.38} />
       <pointLight ref={keyLight} intensity={2.4} distance={35} />
       <pointLight ref={rimLight} intensity={1.8} distance={30} />
     </>
   );
 }
 
-function Stars({ count = 1500 }: { count?: number }) {
+function Stars({ count = 1200 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null);
   const positions = useMemo(() => {
     const points = new Float32Array(count * 3);
@@ -316,7 +327,7 @@ function Stars({ count = 1500 }: { count?: number }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" array={positions} count={count} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial color="#c7d2fe" size={0.035} sizeAttenuation transparent opacity={0.32} depthWrite={false} />
+      <pointsMaterial color="#c7d2fe" size={0.032} sizeAttenuation transparent opacity={0.26} depthWrite={false} />
     </points>
   );
 }
@@ -344,6 +355,90 @@ function SceneOrb({ orb, shape = "sphere" }: { orb: Orb; shape?: "sphere" | "box
         />
       </mesh>
     </Float>
+  );
+}
+
+function PortalField({
+  y,
+  color,
+  accent,
+  tilt = 0,
+  density = 5,
+}: {
+  y: number;
+  color: string;
+  accent: string;
+  tilt?: number;
+  density?: number;
+}) {
+  const group = useRef<THREE.Group>(null);
+  const frameGeometry = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.04)), []);
+  const frames = useMemo(
+    () =>
+      Array.from({ length: density }, (_, index) => ({
+        height: 4.2 + index * 0.72,
+        opacity: Math.max(0.035, 0.13 - index * 0.018),
+        ring: 3.25 + index * 0.52,
+        rotation: tilt + index * 0.11,
+        width: 7.2 + index * 1.1,
+        z: -2.2 - index * 1.45,
+      })),
+    [density, tilt],
+  );
+
+  useFrame(({ clock }) => {
+    if (!group.current) return;
+    const time = clock.elapsedTime;
+    group.current.rotation.z = tilt + Math.sin(time * 0.11 + y * 0.01) * 0.035;
+    group.current.position.z = -0.25 + Math.sin(time * 0.16 + y * 0.02) * 0.18;
+  });
+
+  return (
+    <group ref={group} position={[0, y, -2.6]}>
+      {frames.map((frame, index) => (
+        <group key={`${color}-${index}`} position={[0, 0, frame.z]} rotation={[0, 0, frame.rotation]}>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[frame.ring, 0.012, 10, 128]} />
+            <meshBasicMaterial color={index % 2 ? accent : color} transparent opacity={frame.opacity} depthWrite={false} />
+          </mesh>
+          <lineSegments geometry={frameGeometry} scale={[frame.width, frame.height, 1]}>
+            <lineBasicMaterial color={index % 2 ? color : accent} transparent opacity={frame.opacity * 0.72} />
+          </lineSegments>
+          <mesh position={[0, 0, -0.03]}>
+            <planeGeometry args={[frame.width * 0.82, 0.018]} />
+            <meshBasicMaterial color={index % 2 ? accent : color} transparent opacity={frame.opacity * 0.6} depthWrite={false} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function LightRibbons() {
+  const group = useRef<THREE.Group>(null);
+  const ribbons = useMemo(
+    () => [
+      { color: "#7dd3fc", opacity: 0.08, rotation: -0.58, x: -5.4, z: -8 },
+      { color: "#a5b4fc", opacity: 0.06, rotation: 0.5, x: 5.2, z: -11 },
+      { color: "#86efac", opacity: 0.045, rotation: -0.44, x: 0.4, z: -14 },
+    ],
+    [],
+  );
+
+  useFrame(({ clock }) => {
+    if (!group.current) return;
+    group.current.position.y = Math.sin(clock.elapsedTime * 0.12) * 0.25;
+  });
+
+  return (
+    <group ref={group}>
+      {ribbons.map((ribbon) => (
+        <mesh key={ribbon.color} position={[ribbon.x, 0, ribbon.z]} rotation={[0, 0, ribbon.rotation]}>
+          <boxGeometry args={[0.035, 42, 0.035]} />
+          <meshBasicMaterial color={ribbon.color} transparent opacity={ribbon.opacity} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
@@ -394,27 +489,38 @@ function World() {
 
   return (
     <>
+      {PORTAL_PALETTE.map((portal, index) => (
+        <PortalField
+          key={SECTION_IDS[index]}
+          y={-vh * index}
+          color={portal.color}
+          accent={portal.accent}
+          tilt={portal.tilt}
+          density={index === 0 ? 6 : 5}
+        />
+      ))}
+
       <group position={[0, 0, 0]}>
         <group ref={hero}>
           <mesh>
             <icosahedronGeometry args={[2.9, 2]} />
-            <meshStandardMaterial color="#07101f" metalness={0.3} roughness={0.48} transparent opacity={0.72} />
+            <meshStandardMaterial color="#07101f" metalness={0.3} roughness={0.48} transparent opacity={0.54} />
           </mesh>
           <lineSegments geometry={heroEdges}>
-            <lineBasicMaterial color="#8dd7ee" transparent opacity={0.24} />
+            <lineBasicMaterial color="#8dd7ee" transparent opacity={0.17} />
           </lineSegments>
         </group>
         <mesh rotation={[Math.PI / 2.5, 0, 0]}>
           <torusGeometry args={[4.5, 0.055, 16, 128]} />
-          <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.28} transparent opacity={0.34} />
+          <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.24} transparent opacity={0.24} />
         </mesh>
         <mesh rotation={[Math.PI / 3.2, 0, Math.PI / 4]}>
           <torusGeometry args={[5.35, 0.04, 16, 128]} />
-          <meshStandardMaterial color="#a5b4fc" emissive="#a5b4fc" emissiveIntensity={0.22} transparent opacity={0.24} />
+          <meshStandardMaterial color="#a5b4fc" emissive="#a5b4fc" emissiveIntensity={0.18} transparent opacity={0.17} />
         </mesh>
         <mesh rotation={[Math.PI / 2, Math.PI / 3, 0]}>
           <torusGeometry args={[6.45, 0.025, 16, 128]} />
-          <meshStandardMaterial color="#86efac" emissive="#86efac" emissiveIntensity={0.16} transparent opacity={0.14} />
+          <meshStandardMaterial color="#86efac" emissive="#86efac" emissiveIntensity={0.12} transparent opacity={0.1} />
         </mesh>
         {HERO_ORBS.map((orb, index) => (
           <SceneOrb key={`hero-${index}`} orb={orb} />
@@ -577,7 +683,9 @@ function HtmlSections() {
       <section id="hero" className="scene-section scene-hero" style={{ top: 0 }}>
         <div className="scene-copy scene-copy-hero">
           <div className="profile-medallion" aria-label="Portrait of Nishit Rajput">
-            <img src="/nishit-profile.webp" alt="Nishit Rajput" />
+            <span className="profile-crop">
+              <img src="/nishit-profile.webp" alt="Nishit Rajput" />
+            </span>
           </div>
           <p className="scene-kicker">Full-Stack Developer & CS Student</p>
           <h1 className="hero-title">Nishit Rajput</h1>
@@ -748,6 +856,7 @@ function Experience() {
       <DynamicLights />
       <CameraRig />
       <Stars />
+      <LightRibbons />
 
       <Scroll>
         <World />

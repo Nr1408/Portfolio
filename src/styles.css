@@ -120,8 +120,9 @@ a {
 
 #canvas-root::before {
   background:
-    linear-gradient(90deg, rgba(5, 7, 11, 0.34), transparent 22%, transparent 78%, rgba(5, 7, 11, 0.34)),
-    linear-gradient(180deg, rgba(5, 7, 11, 0.64), transparent 28%, transparent 68%, rgba(5, 7, 11, 0.78));
+    radial-gradient(circle at 50% 44%, transparent 0, rgba(5, 7, 11, 0.12) 38%, rgba(5, 7, 11, 0.54) 100%),
+    linear-gradient(90deg, rgba(5, 7, 11, 0.42), transparent 24%, transparent 76%, rgba(5, 7, 11, 0.42)),
+    linear-gradient(180deg, rgba(5, 7, 11, 0.66), transparent 32%, transparent 68%, rgba(5, 7, 11, 0.82));
 }
 
 #canvas-root::after {
@@ -133,7 +134,7 @@ a {
     transparent 4px
   );
   mix-blend-mode: soft-light;
-  opacity: 0.18;
+  opacity: 0.11;
 }
 
 #canvas-root canvas {
@@ -170,10 +171,11 @@ a {
 .profile-medallion {
   position: relative;
   display: inline-grid;
-  width: 6.6rem;
-  height: 6.6rem;
+  width: 7rem;
+  height: 7rem;
   place-items: center;
-  margin: 0 auto 1rem;
+  margin: 0 auto 0.95rem;
+  padding: 0.32rem;
   border: 1px solid rgba(125, 211, 252, 0.42);
   border-radius: 50%;
   background:
@@ -183,6 +185,7 @@ a {
     0 0 0 0.38rem rgba(125, 211, 252, 0.045),
     0 0 28px rgba(125, 211, 252, 0.18),
     0 18px 54px rgba(0, 0, 0, 0.42);
+  isolation: isolate;
 }
 
 .profile-medallion::after {
@@ -194,12 +197,34 @@ a {
   pointer-events: none;
 }
 
-.profile-medallion img {
-  width: calc(100% - 0.55rem);
-  height: calc(100% - 0.55rem);
+.profile-crop {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   border-radius: 50%;
+  background: rgba(5, 7, 11, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(248, 250, 252, 0.12);
+}
+
+.profile-crop::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 38%, rgba(5, 7, 11, 0.2));
+  content: "";
+  pointer-events: none;
+}
+
+.profile-crop img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: 50% 34%;
+  object-position: 50% 30%;
+  transform: scale(1.68);
+  transform-origin: 50% 31%;
 }
 
 .scene-kicker,
@@ -213,7 +238,7 @@ a {
 
 .scene-kicker {
   margin: 0 0 0.85rem;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
 }
 
 .scene-eyebrow {
@@ -239,7 +264,7 @@ a {
 }
 
 .hero-title {
-  font-size: 4.35rem;
+  font-size: 4rem;
 }
 
 .scene-title {
@@ -698,9 +723,10 @@ a {
   }
 
   .profile-medallion {
-    width: 4.95rem;
-    height: 4.95rem;
-    margin-bottom: 0.7rem;
+    width: 5.45rem;
+    height: 5.45rem;
+    margin-bottom: 0.72rem;
+    padding: 0.28rem;
   }
 
   .profile-medallion::after {
@@ -713,7 +739,7 @@ a {
   }
 
   .hero-title {
-    font-size: 2.75rem;
+    font-size: 2.55rem;
     line-height: 1.04;
   }
 
@@ -826,7 +852,7 @@ a {
   }
 
   .hero-title {
-    font-size: 2.45rem;
+    font-size: 2.35rem;
   }
 
   .hero-actions,
@@ -836,7 +862,40 @@ a {
   }
 
   .profile-medallion {
-    width: 4.55rem;
-    height: 4.55rem;
+    width: 5.05rem;
+    height: 5.05rem;
+  }
+}
+
+@media (max-height: 740px) and (min-width: 761px) {
+  .scene-section {
+    padding-top: 4.5rem;
+    padding-bottom: 3.6rem;
+  }
+
+  .profile-medallion {
+    width: 6.15rem;
+    height: 6.15rem;
+    margin-bottom: 0.72rem;
+  }
+
+  .scene-kicker {
+    margin-bottom: 0.6rem;
+  }
+
+  .hero-title {
+    font-size: 3.55rem;
+  }
+
+  .hero-actions {
+    margin-top: 1.05rem;
+  }
+
+  .social-row {
+    margin-top: 0.58rem;
+  }
+
+  .scroll-cue {
+    bottom: 1.05rem;
   }
 }
