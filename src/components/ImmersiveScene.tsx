@@ -22,6 +22,12 @@ import * as THREE from "three";
 
 type Vec3 = [number, number, number];
 type ProgressRef = MutableRefObject<number>;
+type SceneSettings = {
+  antialias: boolean;
+  dpr: number;
+  lightweight: boolean;
+  mobileScene: boolean;
+};
 
 const PAGES = 8;
 const RESUME =
@@ -507,19 +513,19 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
   const heroEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(4.8, 3.4, 1.8)), []);
   const heroFrameEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.04)), []);
   const panelEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2, 1.2, 0.06)), []);
-  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 5) : HERO_ORBS;
-  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 4) : ABOUT_CRYSTALS;
-  const skillNodes = lightweight ? SKILL_NODES.slice(0, 8) : SKILL_NODES;
-  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 7) : PROJECT_PLANES;
-  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 7) : ACHIEVEMENT_PARTICLES;
-  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 7) : CONTACT_PARTICLES;
-  const educationDots = lightweight ? 22 : 34;
+  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 4) : HERO_ORBS;
+  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 3) : ABOUT_CRYSTALS;
+  const skillNodes = lightweight ? SKILL_NODES.slice(0, 6) : SKILL_NODES;
+  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 5) : PROJECT_PLANES;
+  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 5) : ACHIEVEMENT_PARTICLES;
+  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 5) : CONTACT_PARTICLES;
+  const educationDots = lightweight ? 18 : 34;
   const interestNodes = [
     { color: "#7dd3fc", position: [-2.8, 1, -1] as Vec3 },
     { color: "#a5b4fc", position: [2.5, -0.5, 0.5] as Vec3 },
     { color: "#86efac", position: [-1.1, -2, 2] as Vec3 },
     { color: "#fcd34d", position: [1.6, 2.1, -1.5] as Vec3 },
-  ].slice(0, lightweight ? 3 : 4);
+  ].slice(0, lightweight ? 2 : 4);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -562,7 +568,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
           color={portal.color}
           accent={portal.accent}
           tilt={portal.tilt}
-          density={lightweight ? (index === 0 ? 5 : 3) : index === 0 ? 6 : 5}
+          density={lightweight ? (index === 0 ? 4 : 2) : index === 0 ? 6 : 5}
         />
       ))}
 
@@ -1016,7 +1022,7 @@ function HtmlSections() {
 }
 
 function useScenePerformanceSettings() {
-  const getSettings = () => {
+  const getSettings = (): SceneSettings => {
     const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
     const coarsePointer =
       typeof window !== "undefined" ? window.matchMedia("(pointer: coarse)").matches : false;
@@ -1025,11 +1031,13 @@ function useScenePerformanceSettings() {
     const mobileScene = coarsePointer || narrowScreen;
     const lightweight = mobileScene || lowEnd;
     const pixelRatio = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
-    const maxDpr = lowEnd ? 1.4 : mobileScene ? 2 : 1.75;
+    const maxDpr = lowEnd ? 1.15 : mobileScene ? 1.45 : 1.75;
 
     return {
+      antialias: !mobileScene && !lowEnd,
       dpr: Math.min(Math.max(pixelRatio, 1), maxDpr),
       lightweight,
+      mobileScene,
     };
   };
 
@@ -1075,19 +1083,74 @@ function useScrollProgress() {
   return progressRef;
 }
 
+function MobileRenderDriver({ enabled }: { enabled: boolean }) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    let activeUntil = 0;
+    let timeout = 0;
+
+    const tick = () => {
+      invalidate();
+
+      if (performance.now() < activeUntil) {
+        timeout = window.setTimeout(tick, 34);
+      } else {
+        timeout = 0;
+      }
+    };
+
+    const burst = (duration = 520) => {
+      activeUntil = Math.max(activeUntil, performance.now() + duration);
+
+      if (!timeout) {
+        tick();
+      }
+    };
+
+    const handleInteraction = () => burst();
+    const handleResize = () => burst(760);
+    const idlePulse = window.setInterval(() => invalidate(), 650);
+
+    burst(900);
+    window.addEventListener("scroll", handleInteraction, { passive: true });
+    window.addEventListener("touchstart", handleInteraction, { passive: true });
+    window.addEventListener("touchmove", handleInteraction, { passive: true });
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+
+    return () => {
+      window.clearInterval(idlePulse);
+      if (timeout) window.clearTimeout(timeout);
+      window.removeEventListener("scroll", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("touchmove", handleInteraction);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, [enabled, invalidate]);
+
+  return null;
+}
+
 function Experience({
   lightweight = false,
+  mobileScene = false,
   progressRef,
 }: {
   lightweight?: boolean;
+  mobileScene?: boolean;
   progressRef: ProgressRef;
 }) {
   return (
     <>
       <fog attach="fog" args={["#05070b", 14, 48]} />
+      <MobileRenderDriver enabled={mobileScene} />
       <DynamicLights progressRef={progressRef} />
       <CameraRig progressRef={progressRef} />
-      <DataGridField count={lightweight ? 140 : 900} />
+      <DataGridField count={mobileScene ? 90 : lightweight ? 140 : 900} />
       <LightRibbons />
       <ScrollSyncedWorld lightweight={lightweight} progressRef={progressRef} />
     </>
@@ -1095,7 +1158,7 @@ function Experience({
 }
 
 export default function ImmersiveScene() {
-  const { dpr, lightweight } = useScenePerformanceSettings();
+  const { antialias, dpr, lightweight, mobileScene } = useScenePerformanceSettings();
   const progressRef = useScrollProgress();
 
   return (
@@ -1104,12 +1167,13 @@ export default function ImmersiveScene() {
         <Canvas
           camera={{ position: [0, 0, 14], fov: 45, near: 0.1, far: 120 }}
           fallback={<div className="canvas-fallback" />}
-          gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
+          frameloop={mobileScene ? "demand" : "always"}
+          gl={{ antialias, alpha: false, powerPreference: "high-performance" }}
           dpr={dpr}
           resize={{ scroll: false, debounce: { scroll: 120, resize: 0 } }}
           style={{ background: "#05070b" }}
         >
-          <Experience lightweight={lightweight} progressRef={progressRef} />
+          <Experience lightweight={lightweight} mobileScene={mobileScene} progressRef={progressRef} />
         </Canvas>
       </div>
 
