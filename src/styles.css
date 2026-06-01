@@ -107,6 +107,8 @@ a {
   height: 100vh;
   overflow: hidden;
   background: var(--bg);
+  overscroll-behavior: none;
+  touch-action: pan-y;
 }
 
 #canvas-root::before,
@@ -143,6 +145,7 @@ a {
 
 #canvas-root canvas {
   display: block;
+  touch-action: pan-y;
 }
 
 .scene-section {

@@ -481,7 +481,7 @@ function LightRibbons() {
   );
 }
 
-function World() {
+function World({ lightweight = false }: { lightweight?: boolean }) {
   const { viewport } = useThree();
   const vh = viewport.height;
   const hero = useRef<THREE.Group>(null);
@@ -536,7 +536,7 @@ function World() {
           color={portal.color}
           accent={portal.accent}
           tilt={portal.tilt}
-          density={index === 0 ? 6 : 5}
+          density={lightweight ? (index === 0 ? 4 : 3) : index === 0 ? 6 : 5}
         />
       ))}
 
@@ -942,17 +942,46 @@ function HtmlSections() {
   );
 }
 
-function Experience() {
+function useScenePerformanceSettings() {
+  const [settings, setSettings] = useState(() => {
+    const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
+    return { damping: 0.22, distance: 1.2, dpr: lowEnd ? 1 : 1.5, lightweight: lowEnd };
+  });
+
+  useEffect(() => {
+    const update = () => {
+      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      const narrowScreen = window.matchMedia("(max-width: 760px)").matches;
+      const lowEnd = (navigator.hardwareConcurrency || 8) <= 4;
+      const lightweight = coarsePointer || narrowScreen || lowEnd;
+
+      setSettings({
+        damping: lightweight ? 0.08 : 0.22,
+        distance: lightweight ? 0.78 : 1.2,
+        dpr: lightweight ? 1 : 1.5,
+        lightweight,
+      });
+    };
+
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  return settings;
+}
+
+function Experience({ lightweight = false }: { lightweight?: boolean }) {
   return (
     <>
       <fog attach="fog" args={["#05070b", 14, 48]} />
       <DynamicLights />
       <CameraRig />
-      <DataGridField />
+      <DataGridField count={lightweight ? 420 : 900} />
       <LightRibbons />
 
       <Scroll>
-        <World />
+        <World lightweight={lightweight} />
       </Scroll>
 
       <Scroll html style={{ width: "100%" }}>
@@ -963,18 +992,18 @@ function Experience() {
 }
 
 export default function ImmersiveScene() {
-  const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
+  const { damping, distance, dpr, lightweight } = useScenePerformanceSettings();
 
   return (
     <div id="canvas-root">
       <Canvas
         camera={{ position: [0, 0, 14], fov: 45, near: 0.1, far: 120 }}
-        gl={{ antialias: !lowEnd, alpha: false, powerPreference: "high-performance" }}
-        dpr={[1, lowEnd ? 1 : 1.5]}
+        gl={{ antialias: !lightweight, alpha: false, powerPreference: "high-performance" }}
+        dpr={[1, dpr]}
         style={{ background: "#05070b" }}
       >
-        <ScrollControls pages={PAGES} damping={0.22} distance={1.2}>
-          <Experience />
+        <ScrollControls pages={PAGES} damping={damping} distance={distance}>
+          <Experience lightweight={lightweight} />
         </ScrollControls>
       </Canvas>
     </div>
