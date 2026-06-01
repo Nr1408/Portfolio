@@ -360,28 +360,42 @@ function DataGridField({ count = 900 }: { count?: number }) {
   );
 }
 
-function SceneOrb({ orb, shape = "sphere" }: { orb: Orb; shape?: "sphere" | "box" | "octa" }) {
+function SceneOrb({
+  orb,
+  shape = "sphere",
+  animated = true,
+}: {
+  orb: Orb;
+  shape?: "sphere" | "box" | "octa";
+  animated?: boolean;
+}) {
+  const mesh = (
+    <mesh position={orb.position}>
+      {shape === "box" ? (
+        <boxGeometry args={[orb.size * 2.5, orb.size * 2.5, orb.size * 2.5]} />
+      ) : shape === "octa" ? (
+        <octahedronGeometry args={[orb.size * 2.8, 0]} />
+      ) : (
+        <sphereGeometry args={[orb.size, 14, 14]} />
+      )}
+      <meshStandardMaterial
+        color={orb.color}
+        emissive={orb.color}
+        emissiveIntensity={0.45}
+        transparent
+        opacity={0.58}
+        roughness={0.34}
+        metalness={0.18}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+
+  if (!animated) return mesh;
+
   return (
     <Float speed={orb.speed} rotationIntensity={0.7} floatIntensity={0.9}>
-      <mesh position={orb.position}>
-        {shape === "box" ? (
-          <boxGeometry args={[orb.size * 2.5, orb.size * 2.5, orb.size * 2.5]} />
-        ) : shape === "octa" ? (
-          <octahedronGeometry args={[orb.size * 2.8, 0]} />
-        ) : (
-          <sphereGeometry args={[orb.size, 18, 18]} />
-        )}
-        <meshStandardMaterial
-          color={orb.color}
-          emissive={orb.color}
-          emissiveIntensity={0.45}
-          transparent
-          opacity={0.58}
-          roughness={0.34}
-          metalness={0.18}
-          depthWrite={false}
-        />
-      </mesh>
+      {mesh}
     </Float>
   );
 }
@@ -494,12 +508,19 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
   const heroEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(4.8, 3.4, 1.8)), []);
   const heroFrameEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.04)), []);
   const panelEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2, 1.2, 0.06)), []);
-  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 4) : HERO_ORBS;
-  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 4) : ABOUT_CRYSTALS;
-  const skillNodes = lightweight ? SKILL_NODES.slice(0, 8) : SKILL_NODES;
-  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 7) : PROJECT_PLANES;
-  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 7) : ACHIEVEMENT_PARTICLES;
-  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 8) : CONTACT_PARTICLES;
+  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 2) : HERO_ORBS;
+  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 2) : ABOUT_CRYSTALS;
+  const skillNodes = lightweight ? SKILL_NODES.slice(0, 5) : SKILL_NODES;
+  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 4) : PROJECT_PLANES;
+  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 4) : ACHIEVEMENT_PARTICLES;
+  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 4) : CONTACT_PARTICLES;
+  const educationDots = lightweight ? 12 : 34;
+  const interestNodes = [
+    { color: "#7dd3fc", position: [-2.8, 1, -1] as Vec3 },
+    { color: "#a5b4fc", position: [2.5, -0.5, 0.5] as Vec3 },
+    { color: "#86efac", position: [-1.1, -2, 2] as Vec3 },
+    { color: "#fcd34d", position: [1.6, 2.1, -1.5] as Vec3 },
+  ].slice(0, lightweight ? 2 : 4);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -542,7 +563,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
           color={portal.color}
           accent={portal.accent}
           tilt={portal.tilt}
-          density={lightweight ? (index === 0 ? 4 : 3) : index === 0 ? 6 : 5}
+          density={lightweight ? (index === 0 ? 3 : 2) : index === 0 ? 6 : 5}
         />
       ))}
 
@@ -581,30 +602,32 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
           </mesh>
         </group>
         {heroOrbs.map((orb, index) => (
-          <SceneOrb key={`hero-${index}`} orb={orb} shape="box" />
+          <SceneOrb key={`hero-${index}`} orb={orb} shape="box" animated={!lightweight} />
         ))}
       </group>
 
       <group position={[0, -vh, 0]}>
         <group ref={about}>
-          <Float speed={0.65} rotationIntensity={0.9} floatIntensity={0.6}>
+          {!lightweight && (
+            <Float speed={0.65} rotationIntensity={0.9} floatIntensity={0.6}>
             <mesh>
               <dodecahedronGeometry args={[2.6, 0]} />
               <meshStandardMaterial color="#a5b4fc" wireframe transparent opacity={0.24} />
             </mesh>
-          </Float>
+            </Float>
+          )}
           <lineSegments geometry={heroFrameEdges} scale={[5.6, 3.2, 1]} rotation={[0, 0, Math.PI / 9]}>
             <lineBasicMaterial color="#7dd3fc" transparent opacity={0.15} />
           </lineSegments>
         </group>
         {aboutCrystals.map((orb, index) => (
-          <SceneOrb key={`about-${index}`} orb={orb} shape="box" />
+          <SceneOrb key={`about-${index}`} orb={orb} shape="box" animated={!lightweight} />
         ))}
       </group>
 
       <group position={[0, -vh * 2, 0]}>
         {skillNodes.map((orb, index) => (
-          <SceneOrb key={`skill-${index}`} orb={orb} />
+          <SceneOrb key={`skill-${index}`} orb={orb} animated={!lightweight} />
         ))}
         <lineSegments>
           <bufferGeometry>
@@ -627,8 +650,8 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
       </group>
 
       <group ref={projectWall} position={[0, -vh * 3, 0]}>
-        {projectPlanes.map((plane, index) => (
-          <Float key={`project-${index}`} speed={0.55 + index * 0.05} rotationIntensity={0.2} floatIntensity={0.45}>
+        {projectPlanes.map((plane, index) => {
+          const panel = (
             <group position={plane.position} rotation={plane.rotation}>
               <mesh>
                 <boxGeometry args={[2.2, 1.2, 0.06]} />
@@ -638,8 +661,18 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
                 <lineBasicMaterial color={plane.color} transparent opacity={0.26} />
               </lineSegments>
             </group>
-          </Float>
-        ))}
+          );
+
+          if (lightweight) {
+            return <group key={`project-${index}`}>{panel}</group>;
+          }
+
+          return (
+            <Float key={`project-${index}`} speed={0.55 + index * 0.05} rotationIntensity={0.2} floatIntensity={0.45}>
+              {panel}
+            </Float>
+          );
+        })}
       </group>
 
       <group position={[0, -vh * 4, 0]}>
@@ -648,9 +681,9 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
             <coneGeometry args={[2.25, 4.4, 4]} />
             <meshStandardMaterial color="#7dd3fc" wireframe transparent opacity={0.18} />
           </mesh>
-          {Array.from({ length: 34 }, (_, i) => {
-            const a = (i / 34) * Math.PI * 5;
-            const y = (i / 34) * 5.2 - 2.6;
+          {Array.from({ length: educationDots }, (_, i) => {
+            const a = (i / educationDots) * Math.PI * 5;
+            const y = (i / educationDots) * 5.2 - 2.6;
             const radius = 1.6 + i * 0.055;
             return (
               <mesh key={`edu-${i}`} position={[Math.cos(a) * radius, y, Math.sin(a) * radius]}>
@@ -674,18 +707,13 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
           </mesh>
         </group>
         {achievementParticles.map((orb, index) => (
-          <SceneOrb key={`achievement-${index}`} orb={orb} shape="octa" />
+          <SceneOrb key={`achievement-${index}`} orb={orb} shape="octa" animated={!lightweight} />
         ))}
       </group>
 
       <group position={[0, -vh * 6, 0]}>
-        {[
-          { color: "#7dd3fc", position: [-2.8, 1, -1] as Vec3 },
-          { color: "#a5b4fc", position: [2.5, -0.5, 0.5] as Vec3 },
-          { color: "#86efac", position: [-1.1, -2, 2] as Vec3 },
-          { color: "#fcd34d", position: [1.6, 2.1, -1.5] as Vec3 },
-        ].map((node, index) => (
-          <Float key={`interest-${index}`} speed={0.8 + index * 0.18} rotationIntensity={0.35} floatIntensity={1.2}>
+        {interestNodes.map((node, index) => {
+          const interestPanel = (
             <group position={node.position}>
               <mesh>
                 <boxGeometry args={[1.5, 0.86, 0.08]} />
@@ -703,8 +731,18 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
                 <meshStandardMaterial color={node.color} emissive={node.color} emissiveIntensity={0.3} transparent opacity={0.36} />
               </mesh>
             </group>
-          </Float>
-        ))}
+          );
+
+          if (lightweight) {
+            return <group key={`interest-${index}`}>{interestPanel}</group>;
+          }
+
+          return (
+            <Float key={`interest-${index}`} speed={0.8 + index * 0.18} rotationIntensity={0.35} floatIntensity={1.2}>
+              {interestPanel}
+            </Float>
+          );
+        })}
         <lineSegments geometry={heroFrameEdges} scale={[7.4, 4.2, 1]} rotation={[0.2, 0, -0.16]}>
           <lineBasicMaterial color="#c4b5fd" transparent opacity={0.12} />
         </lineSegments>
@@ -712,13 +750,20 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
 
       <group position={[0, -vh * 7, 0]}>
         <group ref={contact}>
-          <mesh>
+          {!lightweight && (
+            <mesh>
             <torusKnotGeometry args={[2, 0.42, 144, 32]} />
             <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.1} wireframe transparent opacity={0.16} />
-          </mesh>
+            </mesh>
+          )}
+          {lightweight && (
+            <lineSegments geometry={heroFrameEdges} scale={[4.8, 3.1, 1]} rotation={[0.16, 0, 0.22]}>
+              <lineBasicMaterial color="#7dd3fc" transparent opacity={0.14} />
+            </lineSegments>
+          )}
         </group>
         {contactParticles.map((orb, index) => (
-          <SceneOrb key={`contact-${index}`} orb={orb} />
+          <SceneOrb key={`contact-${index}`} orb={orb} animated={!lightweight} />
         ))}
       </group>
     </>
@@ -951,7 +996,7 @@ function HtmlSections() {
 function useScenePerformanceSettings() {
   const [settings, setSettings] = useState(() => {
     const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
-    return { damping: 0.16, distance: 1.05, dpr: lowEnd ? 1 : 1.5, lightweight: lowEnd };
+    return { damping: 0.16, distance: 1.05, dpr: lowEnd ? 0.75 : 1.5, lightweight: lowEnd };
   });
 
   useEffect(() => {
@@ -964,7 +1009,7 @@ function useScenePerformanceSettings() {
       setSettings({
         damping: lightweight ? 0.045 : 0.16,
         distance: lightweight ? 0.58 : 1.05,
-        dpr: lightweight ? 1 : 1.5,
+        dpr: lightweight ? 0.75 : 1.5,
         lightweight,
       });
     };
@@ -983,8 +1028,8 @@ function Experience({ lightweight = false }: { lightweight?: boolean }) {
       <fog attach="fog" args={["#05070b", 14, 48]} />
       <DynamicLights />
       <CameraRig />
-      <DataGridField count={lightweight ? 260 : 900} />
-      <LightRibbons />
+      <DataGridField count={lightweight ? 140 : 900} />
+      {!lightweight && <LightRibbons />}
 
       <Scroll>
         <World lightweight={lightweight} />
@@ -1005,7 +1050,7 @@ export default function ImmersiveScene() {
       <Canvas
         camera={{ position: [0, 0, 14], fov: 45, near: 0.1, far: 120 }}
         gl={{ antialias: !lightweight, alpha: false, powerPreference: "high-performance" }}
-        dpr={[1, dpr]}
+        dpr={dpr}
         style={{ background: "#05070b" }}
       >
         <ScrollControls pages={PAGES} damping={damping} distance={distance}>
