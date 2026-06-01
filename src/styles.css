@@ -803,14 +803,20 @@ a {
     padding: 0.75rem;
   }
 
+  #projects .scene-title {
+    margin-bottom: 0.75rem;
+  }
+
   .project-grid {
-    display: flex;
-    width: calc(100vw - 2rem);
+    display: grid;
+    width: min(100%, 22.5rem);
     max-width: 25.5rem;
-    overflow-x: auto;
-    padding: 0.15rem 0 0.75rem;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
+    grid-template-columns: 1fr;
+    gap: 0.68rem;
+    margin-top: 0.95rem;
+    overflow: visible;
+    padding: 0;
+    scroll-snap-type: none;
   }
 
   .project-grid::-webkit-scrollbar {
@@ -818,9 +824,31 @@ a {
   }
 
   .project-card {
-    flex: 0 0 min(84vw, 21rem);
-    padding: 0.9rem;
-    scroll-snap-align: center;
+    min-height: auto;
+    padding: 0.78rem;
+    scroll-snap-align: unset;
+  }
+
+  .project-card p {
+    flex: initial;
+    margin-bottom: 0.7rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .project-card .award {
+    margin-bottom: 0.45rem;
+    font-size: 0.64rem;
+  }
+
+  .project-card .project-heading {
+    margin-bottom: 0.5rem;
+  }
+
+  .project-card .tag-row span {
+    min-height: 1.45rem;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.62rem;
   }
 
   .achievement-list {
