@@ -165,8 +165,8 @@ a {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 92svh;
-  padding: 5.25rem 6vw;
+  min-height: auto;
+  padding: 3.15rem 6vw;
   scroll-margin-top: 1.25rem;
   pointer-events: none;
 }
@@ -174,22 +174,6 @@ a {
 .scene-hero {
   min-height: 100svh;
   padding-top: 4.8rem;
-}
-
-#achievements {
-  min-height: 74svh;
-  padding-bottom: 2.7rem;
-}
-
-#interests {
-  min-height: 44svh;
-  padding-top: 2.7rem;
-  padding-bottom: 2.7rem;
-}
-
-#contact {
-  min-height: 76svh;
-  padding-top: 2.7rem;
 }
 
 .scene-copy {
@@ -826,29 +810,13 @@ a {
 @media (max-width: 760px) {
   .scene-section {
     align-items: center;
-    min-height: 88svh;
-    padding: 4.15rem 1rem 3.7rem;
+    min-height: auto;
+    padding: 2.55rem 1rem;
   }
 
   .scene-hero {
     min-height: 100svh;
     padding-top: 4.3rem;
-  }
-
-  #achievements {
-    min-height: auto;
-    padding-bottom: 2rem;
-  }
-
-  #interests {
-    min-height: auto;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-
-  #contact {
-    min-height: 72svh;
-    padding-top: 2rem;
   }
 
   .scene-copy {
