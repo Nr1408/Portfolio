@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type PropsWithChildren } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent, type PropsWithChildren } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, Scroll, ScrollControls, useScroll } from "@react-three/drei";
 import {
@@ -741,6 +741,23 @@ function SceneSection({
 }
 
 function HtmlSections() {
+  const [selectedSurface, setSelectedSurface] = useState<string | null>(null);
+  const surfaceClass = (base: string, id: string) =>
+    `${base} selectable-surface${selectedSurface === id ? " is-selected" : ""}`;
+  const surfaceProps = (id: string) => ({
+    onMouseMove: () => setSelectedSurface(id),
+    onMouseLeave: () => setSelectedSurface((current) => (current === id ? null : current)),
+    onPointerEnter: () => setSelectedSurface(id),
+    onPointerDown: () => setSelectedSurface(id),
+    onPointerLeave: (event: PointerEvent<HTMLElement>) => {
+      if (event.pointerType !== "touch") {
+        setSelectedSurface((current) => (current === id ? null : current));
+      }
+    },
+    onFocus: () => setSelectedSurface(id),
+    onBlur: () => setSelectedSurface((current) => (current === id ? null : current)),
+  });
+
   return (
     <>
       <section id="hero" className="scene-section scene-hero" style={{ top: 0 }}>
@@ -791,7 +808,7 @@ function HtmlSections() {
           I enjoy hackathon pressure, clean architecture, and interfaces that feel fast without
           feeling disposable.
         </p>
-        <div className="focus-strip">
+        <div className={surfaceClass("focus-strip", "about-focus")} {...surfaceProps("about-focus")}>
           <span>Current focus</span>
           <strong>Real-world apps, strong UX, clean systems</strong>
         </div>
@@ -800,7 +817,11 @@ function HtmlSections() {
       <SceneSection index={2} eyebrow="Skills" title="Tech Stack" wide>
         <div className="skill-grid">
           {SKILLS.map((group) => (
-            <div key={group.label} className={`skill-card ${group.c}`}>
+            <div
+              key={group.label}
+              className={surfaceClass(`skill-card ${group.c}`, `skill-${group.label}`)}
+              {...surfaceProps(`skill-${group.label}`)}
+            >
               <span>{group.label}</span>
               <div>
                 {group.items.map((skill) => (
@@ -815,7 +836,11 @@ function HtmlSections() {
       <SceneSection index={3} eyebrow="Projects" title="Selected Work" wide>
         <div className="project-grid">
           {PROJECTS.map((project) => (
-            <article key={project.title} className="project-card">
+            <article
+              key={project.title}
+              className={surfaceClass("project-card", `project-${project.title}`)}
+              {...surfaceProps(`project-${project.title}`)}
+            >
               {project.award && <span className="award">{project.award}</span>}
               <div className="project-heading">
                 <h3>{project.title}</h3>
@@ -835,7 +860,7 @@ function HtmlSections() {
       </SceneSection>
 
       <SceneSection index={4} eyebrow="Education" title="Education">
-        <div className="education-block">
+        <div className={surfaceClass("education-block", "education-college")} {...surfaceProps("education-college")}>
           <h3>K.J. Somaiya Institute of Technology</h3>
           <p>B.Tech in Computer Science</p>
           <span>Aug 2023 - Present, Mumbai</span>
@@ -851,7 +876,7 @@ function HtmlSections() {
             </div>
           ))}
         </div>
-        <div className="education-block compact">
+        <div className={surfaceClass("education-block compact", "education-school")} {...surfaceProps("education-school")}>
           <h3>SKK English High School & Junior College</h3>
           <p>Higher Secondary Certificate</p>
           <span>Completed April 2023, Mumbai</span>
@@ -860,12 +885,12 @@ function HtmlSections() {
 
       <SceneSection index={5} eyebrow="Achievements" title="Wins & Milestones">
         <div className="achievement-list">
-          <article>
+          <article className={surfaceClass("", "achievement-knowbuild")} {...surfaceProps("achievement-knowbuild")}>
             <span>1st Place</span>
             <h3>KnowBuild '25 - 8-Hour Startup Hackathon</h3>
             <p>Built WorkFromCafe, a crowdsourced cafe discovery platform for remote workers.</p>
           </article>
-          <article>
+          <article className={surfaceClass("", "achievement-codeprix")} {...surfaceProps("achievement-codeprix")}>
             <span>Finalist - Top 20 / 400+</span>
             <h3>CodePrix 1.0 - National 24-Hour Hackathon</h3>
             <p>Advanced through qualifiers and into the national final at ATLAS SkillTech.</p>
@@ -875,10 +900,15 @@ function HtmlSections() {
 
       <SceneSection index={6} eyebrow="Beyond Code" title="Interests">
         <div className="interest-row">
-          <span>Football</span>
-          <span>Fitness</span>
-          <span>Cycling</span>
-          <span>Drawing</span>
+          {["Football", "Fitness", "Cycling", "Drawing"].map((interest) => (
+            <span
+              key={interest}
+              className={surfaceClass("", `interest-${interest}`)}
+              {...surfaceProps(`interest-${interest}`)}
+            >
+              {interest}
+            </span>
+          ))}
         </div>
       </SceneSection>
 
