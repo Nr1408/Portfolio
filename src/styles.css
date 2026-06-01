@@ -219,13 +219,15 @@ a {
 }
 
 .profile-crop img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   max-width: none;
   border-radius: 50%;
   object-fit: cover;
-  object-position: 50% 30%;
+  object-position: 50% 62%;
   transform: none;
 }
 
