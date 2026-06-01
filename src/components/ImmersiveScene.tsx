@@ -301,34 +301,62 @@ function DynamicLights() {
   );
 }
 
-function Stars({ count = 1200 }: { count?: number }) {
+function DataGridField({ count = 900 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null);
   const positions = useMemo(() => {
     const points = new Float32Array(count * 3);
 
     for (let i = 0; i < count; i += 1) {
-      points[i * 3] = range(i + 700, -55, 55);
-      points[i * 3 + 1] = range(i + 1700, -55, 55);
-      points[i * 3 + 2] = range(i + 2700, -55, 55);
+      const lane = i % 9;
+      const layer = Math.floor(i / 9) % 7;
+      points[i * 3] = range(i + 700, -42, 42);
+      points[i * 3 + 1] = (lane - 4) * 1.35 + range(i + 1700, -0.08, 0.08);
+      points[i * 3 + 2] = -22 + layer * 7 + range(i + 2700, -0.12, 0.12);
     }
 
     return points;
   }, [count]);
+  const traces = useMemo(() => {
+    const lines: number[] = [];
+
+    for (let layer = 0; layer < 7; layer += 1) {
+      const z = -22 + layer * 7;
+
+      for (let lane = -3; lane <= 3; lane += 2) {
+        const y = lane * 1.35;
+        lines.push(-34, y, z, 34, y, z);
+      }
+
+      for (let x = -30; x <= 30; x += 10) {
+        lines.push(x, -5.2, z, x, 5.2, z);
+      }
+    }
+
+    return new Float32Array(lines);
+  }, []);
 
   useFrame(({ clock }) => {
     if (ref.current) {
-      ref.current.rotation.y = clock.elapsedTime * 0.006;
-      ref.current.rotation.x = Math.sin(clock.elapsedTime * 0.04) * 0.04;
+      ref.current.position.z = Math.sin(clock.elapsedTime * 0.12) * 0.8;
+      ref.current.rotation.y = Math.sin(clock.elapsedTime * 0.05) * 0.025;
     }
   });
 
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" array={positions} count={count} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial color="#c7d2fe" size={0.032} sizeAttenuation transparent opacity={0.26} depthWrite={false} />
-    </points>
+    <group>
+      <points ref={ref}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" array={positions} count={count} itemSize={3} />
+        </bufferGeometry>
+        <pointsMaterial color="#7dd3fc" size={0.028} sizeAttenuation transparent opacity={0.22} depthWrite={false} />
+      </points>
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" array={traces} count={traces.length / 3} itemSize={3} />
+        </bufferGeometry>
+        <lineBasicMaterial color="#38bdf8" transparent opacity={0.04} />
+      </lineSegments>
+    </group>
   );
 }
 
@@ -378,7 +406,6 @@ function PortalField({
       Array.from({ length: density }, (_, index) => ({
         height: 4.2 + index * 0.72,
         opacity: Math.max(0.035, 0.13 - index * 0.018),
-        ring: 3.25 + index * 0.52,
         rotation: tilt + index * 0.11,
         width: 7.2 + index * 1.1,
         z: -2.2 - index * 1.45,
@@ -397,13 +424,25 @@ function PortalField({
     <group ref={group} position={[0, y, -2.6]}>
       {frames.map((frame, index) => (
         <group key={`${color}-${index}`} position={[0, 0, frame.z]} rotation={[0, 0, frame.rotation]}>
-          <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[frame.ring, 0.012, 10, 128]} />
-            <meshBasicMaterial color={index % 2 ? accent : color} transparent opacity={frame.opacity} depthWrite={false} />
-          </mesh>
           <lineSegments geometry={frameGeometry} scale={[frame.width, frame.height, 1]}>
             <lineBasicMaterial color={index % 2 ? color : accent} transparent opacity={frame.opacity * 0.72} />
           </lineSegments>
+          <mesh position={[0, frame.height * 0.37, 0]}>
+            <boxGeometry args={[frame.width * 0.44, 0.018, 0.018]} />
+            <meshBasicMaterial color={index % 2 ? accent : color} transparent opacity={frame.opacity * 0.8} depthWrite={false} />
+          </mesh>
+          <mesh position={[0, -frame.height * 0.37, 0]}>
+            <boxGeometry args={[frame.width * 0.44, 0.018, 0.018]} />
+            <meshBasicMaterial color={index % 2 ? color : accent} transparent opacity={frame.opacity * 0.62} depthWrite={false} />
+          </mesh>
+          <mesh position={[frame.width * 0.36, 0, 0]}>
+            <boxGeometry args={[0.018, frame.height * 0.48, 0.018]} />
+            <meshBasicMaterial color={index % 2 ? color : accent} transparent opacity={frame.opacity * 0.58} depthWrite={false} />
+          </mesh>
+          <mesh position={[-frame.width * 0.36, 0, 0]}>
+            <boxGeometry args={[0.018, frame.height * 0.48, 0.018]} />
+            <meshBasicMaterial color={index % 2 ? accent : color} transparent opacity={frame.opacity * 0.58} depthWrite={false} />
+          </mesh>
           <mesh position={[0, 0, -0.03]}>
             <planeGeometry args={[frame.width * 0.82, 0.018]} />
             <meshBasicMaterial color={index % 2 ? accent : color} transparent opacity={frame.opacity * 0.6} depthWrite={false} />
@@ -452,7 +491,8 @@ function World() {
   const trophy = useRef<THREE.Group>(null);
   const contact = useRef<THREE.Group>(null);
 
-  const heroEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(3.2, 2)), []);
+  const heroEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(4.8, 3.4, 1.8)), []);
+  const heroFrameEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.04)), []);
   const panelEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2, 1.2, 0.06)), []);
 
   useFrame(({ clock }) => {
@@ -503,27 +543,39 @@ function World() {
       <group position={[0, 0, 0]}>
         <group ref={hero}>
           <mesh>
-            <icosahedronGeometry args={[2.9, 2]} />
+            <boxGeometry args={[4.8, 3.4, 1.8]} />
             <meshStandardMaterial color="#07101f" metalness={0.3} roughness={0.48} transparent opacity={0.54} />
           </mesh>
           <lineSegments geometry={heroEdges}>
             <lineBasicMaterial color="#8dd7ee" transparent opacity={0.17} />
           </lineSegments>
         </group>
-        <mesh rotation={[Math.PI / 2.5, 0, 0]}>
-          <torusGeometry args={[4.5, 0.055, 16, 128]} />
-          <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.24} transparent opacity={0.24} />
-        </mesh>
-        <mesh rotation={[Math.PI / 3.2, 0, Math.PI / 4]}>
-          <torusGeometry args={[5.35, 0.04, 16, 128]} />
-          <meshStandardMaterial color="#a5b4fc" emissive="#a5b4fc" emissiveIntensity={0.18} transparent opacity={0.17} />
-        </mesh>
-        <mesh rotation={[Math.PI / 2, Math.PI / 3, 0]}>
-          <torusGeometry args={[6.45, 0.025, 16, 128]} />
-          <meshStandardMaterial color="#86efac" emissive="#86efac" emissiveIntensity={0.12} transparent opacity={0.1} />
-        </mesh>
+        <group rotation={[0.18, 0, 0]}>
+          <lineSegments geometry={heroFrameEdges} scale={[8.8, 4.7, 1]}>
+            <lineBasicMaterial color="#7dd3fc" transparent opacity={0.16} />
+          </lineSegments>
+          <lineSegments geometry={heroFrameEdges} scale={[6.8, 3.4, 1]} rotation={[0, 0, Math.PI / 7]}>
+            <lineBasicMaterial color="#a5b4fc" transparent opacity={0.13} />
+          </lineSegments>
+          <mesh position={[0, 2.35, 0]}>
+            <boxGeometry args={[3.9, 0.05, 0.04]} />
+            <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.24} transparent opacity={0.22} />
+          </mesh>
+          <mesh position={[0, -2.35, 0]}>
+            <boxGeometry args={[3.2, 0.04, 0.04]} />
+            <meshStandardMaterial color="#86efac" emissive="#86efac" emissiveIntensity={0.12} transparent opacity={0.12} />
+          </mesh>
+          <mesh position={[-4.4, 0, 0]}>
+            <boxGeometry args={[0.05, 2.4, 0.04]} />
+            <meshStandardMaterial color="#a5b4fc" emissive="#a5b4fc" emissiveIntensity={0.16} transparent opacity={0.12} />
+          </mesh>
+          <mesh position={[4.4, 0, 0]}>
+            <boxGeometry args={[0.05, 2.4, 0.04]} />
+            <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.2} transparent opacity={0.15} />
+          </mesh>
+        </group>
         {HERO_ORBS.map((orb, index) => (
-          <SceneOrb key={`hero-${index}`} orb={orb} />
+          <SceneOrb key={`hero-${index}`} orb={orb} shape="box" />
         ))}
       </group>
 
@@ -535,10 +587,9 @@ function World() {
               <meshStandardMaterial color="#a5b4fc" wireframe transparent opacity={0.24} />
             </mesh>
           </Float>
-          <mesh rotation={[0, 0, Math.PI / 4]}>
-            <torusGeometry args={[4.1, 0.035, 12, 96]} />
-            <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.18} transparent opacity={0.16} />
-          </mesh>
+          <lineSegments geometry={heroFrameEdges} scale={[5.6, 3.2, 1]} rotation={[0, 0, Math.PI / 9]}>
+            <lineBasicMaterial color="#7dd3fc" transparent opacity={0.15} />
+          </lineSegments>
         </group>
         {ABOUT_CRYSTALS.map((orb, index) => (
           <SceneOrb key={`about-${index}`} orb={orb} shape="box" />
@@ -627,18 +678,30 @@ function World() {
           { color: "#a5b4fc", position: [2.5, -0.5, 0.5] as Vec3 },
           { color: "#86efac", position: [-1.1, -2, 2] as Vec3 },
           { color: "#fcd34d", position: [1.6, 2.1, -1.5] as Vec3 },
-        ].map((planet, index) => (
+        ].map((node, index) => (
           <Float key={`interest-${index}`} speed={0.8 + index * 0.18} rotationIntensity={0.35} floatIntensity={1.2}>
-            <mesh position={planet.position}>
-              <sphereGeometry args={[0.9, 32, 32]} />
-              <meshStandardMaterial color={planet.color} emissive={planet.color} emissiveIntensity={0.1} transparent opacity={0.3} />
-            </mesh>
+            <group position={node.position}>
+              <mesh>
+                <boxGeometry args={[1.5, 0.86, 0.08]} />
+                <meshStandardMaterial color="#07101f" metalness={0.35} roughness={0.5} transparent opacity={0.46} />
+              </mesh>
+              <lineSegments geometry={panelEdges}>
+                <lineBasicMaterial color={node.color} transparent opacity={0.28} />
+              </lineSegments>
+              <mesh position={[0, 0.18, 0.08]}>
+                <boxGeometry args={[0.86, 0.045, 0.04]} />
+                <meshStandardMaterial color={node.color} emissive={node.color} emissiveIntensity={0.4} transparent opacity={0.5} />
+              </mesh>
+              <mesh position={[-0.2, -0.12, 0.08]}>
+                <boxGeometry args={[0.46, 0.04, 0.04]} />
+                <meshStandardMaterial color={node.color} emissive={node.color} emissiveIntensity={0.3} transparent opacity={0.36} />
+              </mesh>
+            </group>
           </Float>
         ))}
-        <mesh rotation={[Math.PI / 2.2, 0, 0]}>
-          <torusGeometry args={[4.8, 0.025, 12, 128]} />
-          <meshStandardMaterial color="#c4b5fd" emissive="#c4b5fd" emissiveIntensity={0.12} transparent opacity={0.14} />
-        </mesh>
+        <lineSegments geometry={heroFrameEdges} scale={[7.4, 4.2, 1]} rotation={[0.2, 0, -0.16]}>
+          <lineBasicMaterial color="#c4b5fd" transparent opacity={0.12} />
+        </lineSegments>
       </group>
 
       <group position={[0, -vh * 7, 0]}>
@@ -855,7 +918,7 @@ function Experience() {
       <fog attach="fog" args={["#05070b", 14, 48]} />
       <DynamicLights />
       <CameraRig />
-      <Stars />
+      <DataGridField />
       <LightRibbons />
 
       <Scroll>
