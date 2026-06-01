@@ -1,6 +1,14 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent, type PropsWithChildren } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+  type PointerEvent,
+  type PropsWithChildren,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, Scroll, ScrollControls, useScroll } from "@react-three/drei";
+import { Float } from "@react-three/drei";
 import {
   ArrowDown,
   Download,
@@ -13,6 +21,7 @@ import {
 import * as THREE from "three";
 
 type Vec3 = [number, number, number];
+type ProgressRef = MutableRefObject<number>;
 
 const PAGES = 8;
 const RESUME =
@@ -200,18 +209,10 @@ const CONTACT_PARTICLES: Orb[] = Array.from({ length: 14 }, (_, i) => {
 });
 
 function scrollToScene(index: number) {
-  const root = document.getElementById("canvas-root");
-  if (!root) return;
+  const target = document.getElementById(SECTION_IDS[index]);
+  if (!target) return;
 
-  const scroller = Array.from(root.querySelectorAll("div")).find((element) => {
-    const style = getComputedStyle(element);
-    return style.overflowY === "auto" && element.scrollHeight > element.clientHeight;
-  });
-
-  if (!scroller) return;
-
-  const max = scroller.scrollHeight - scroller.clientHeight;
-  scroller.scrollTo({ top: max * (index / (PAGES - 1)), behavior: "smooth" });
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function currentSegment(value: number, count: number) {
@@ -222,8 +223,7 @@ function currentSegment(value: number, count: number) {
   return { index, smooth };
 }
 
-function CameraRig() {
-  const scroll = useScroll();
+function CameraRig({ progressRef }: { progressRef: ProgressRef }) {
   const mouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -237,7 +237,7 @@ function CameraRig() {
   }, []);
 
   useFrame((state, delta) => {
-    const { index, smooth } = currentSegment(scroll.offset, WAYPOINTS.length);
+    const { index, smooth } = currentSegment(progressRef.current, WAYPOINTS.length);
     const a = WAYPOINTS[index];
     const b = WAYPOINTS[index + 1] ?? a;
     const fovA = FOVS[index];
@@ -260,14 +260,13 @@ function CameraRig() {
   return null;
 }
 
-function DynamicLights() {
-  const scroll = useScroll();
+function DynamicLights({ progressRef }: { progressRef: ProgressRef }) {
   const keyLight = useRef<THREE.PointLight>(null);
   const rimLight = useRef<THREE.PointLight>(null);
   const color = useMemo(() => new THREE.Color(), []);
 
   useFrame(({ clock }) => {
-    const { index, smooth } = currentSegment(scroll.offset, LIGHT_COLORS.length);
+    const { index, smooth } = currentSegment(progressRef.current, LIGHT_COLORS.length);
     const a = LIGHT_COLORS[index];
     const b = LIGHT_COLORS[index + 1] ?? a;
     color.setRGB(
@@ -770,6 +769,29 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
   );
 }
 
+function ScrollSyncedWorld({
+  lightweight = false,
+  progressRef,
+}: {
+  lightweight?: boolean;
+  progressRef: ProgressRef;
+}) {
+  const group = useRef<THREE.Group>(null);
+  const { viewport } = useThree();
+
+  useFrame((_, delta) => {
+    if (!group.current) return;
+    const targetY = progressRef.current * (PAGES - 1) * viewport.height;
+    group.current.position.y = THREE.MathUtils.damp(group.current.position.y, targetY, 4.5, delta);
+  });
+
+  return (
+    <group ref={group}>
+      <World lightweight={lightweight} />
+    </group>
+  );
+}
+
 function SceneSection({
   index,
   eyebrow,
@@ -778,7 +800,7 @@ function SceneSection({
   children,
 }: PropsWithChildren<{ index: number; eyebrow: string; title: string; wide?: boolean }>) {
   return (
-    <section id={SECTION_IDS[index]} className="scene-section" style={{ top: `${index * 100}vh` }}>
+    <section id={SECTION_IDS[index]} className="scene-section">
       <div className={wide ? "scene-copy scene-copy-wide" : "scene-copy"}>
         <div className="scene-eyebrow">
           <span>{String(index).padStart(2, "0")}</span>
@@ -811,7 +833,7 @@ function HtmlSections() {
 
   return (
     <>
-      <section id="hero" className="scene-section scene-hero" style={{ top: 0 }}>
+      <section id="hero" className="scene-section scene-hero">
         <div className="scene-copy scene-copy-hero">
           <div className="profile-medallion" aria-label="Portrait of Nishit Rajput">
             <span className="profile-crop">
@@ -993,188 +1015,6 @@ function HtmlSections() {
   );
 }
 
-function MobileSection({
-  id,
-  eyebrow,
-  title,
-  children,
-}: PropsWithChildren<{ id: string; eyebrow: string; title: string }>) {
-  return (
-    <section id={id} className="mobile-section">
-      <p className="mobile-eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-function MobilePortfolio() {
-  return (
-    <main className="mobile-root">
-      <section className="mobile-hero" aria-label="Nishit Rajput portfolio">
-        <div className="mobile-profile" aria-label="Portrait of Nishit Rajput">
-          <img src="/nishit-profile.webp" alt="Nishit Rajput" />
-        </div>
-        <p className="mobile-kicker">Full-Stack Developer & CS Student</p>
-        <h1>Nishit Rajput</h1>
-        <p className="mobile-hero-copy">
-          Building practical software with thoughtful UX, scalable systems, and real-world impact.
-        </p>
-        <div className="mobile-actions">
-          <a className="action action-primary" href="#mobile-projects">
-            <ExternalLink size={17} />
-            Projects
-          </a>
-          <a className="action action-secondary" href={RESUME} target="_blank" rel="noopener noreferrer">
-            <Download size={17} />
-            Resume
-          </a>
-        </div>
-        <div className="social-row mobile-social">
-          <a href={GH_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <Github size={18} />
-            GitHub
-          </a>
-          <a href={LI_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            <Linkedin size={18} />
-            LinkedIn
-          </a>
-        </div>
-        <a className="mobile-scroll-cue" href="#mobile-about" aria-label="Go to about">
-          <ArrowDown size={21} />
-        </a>
-      </section>
-
-      <MobileSection id="mobile-about" eyebrow="01 About" title="About Me">
-        <div className="mobile-card mobile-about-card">
-          <p>
-            I am a third-year Computer Science student who likes turning rough ideas into useful,
-            reliable products.
-          </p>
-          <p>
-            My work spans full-stack apps, mobile experiences, and machine learning prototypes.
-          </p>
-          <span>Current focus</span>
-          <strong>Real-world apps, strong UX, clean systems</strong>
-        </div>
-      </MobileSection>
-
-      <MobileSection id="mobile-skills" eyebrow="02 Skills" title="Tech Stack">
-        <div className="mobile-skill-grid">
-          {SKILLS.map((group) => (
-            <article key={group.label} className={`mobile-card mobile-skill-card ${group.c}`}>
-              <span>{group.label}</span>
-              <div>
-                {group.items.map((skill) => (
-                  <em key={skill}>{skill}</em>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </MobileSection>
-
-      <MobileSection id="mobile-projects" eyebrow="03 Projects" title="Selected Work">
-        <div className="mobile-project-list">
-          {PROJECTS.map((project) => (
-            <article key={project.title} className="mobile-card mobile-project-card">
-              {project.award && <span className="award">{project.award}</span>}
-              <div className="project-heading">
-                <h3>{project.title}</h3>
-                <a href={project.github} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} GitHub`}>
-                  <Github size={17} />
-                </a>
-              </div>
-              <p>{project.description}</p>
-              <div className="tag-row">
-                {project.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </MobileSection>
-
-      <MobileSection id="mobile-education" eyebrow="04 Education" title="Education">
-        <div className="mobile-education-stack">
-          <article className="mobile-card mobile-education-card">
-            <h3>K.J. Somaiya Institute of Technology</h3>
-            <p>B.Tech in Computer Science</p>
-            <span>Aug 2023 - Present, Mumbai</span>
-          </article>
-          <div className="mobile-cgpa-list" aria-label="CGPA progression">
-            {SEMESTERS.map((semester) => (
-              <div key={semester.label} className="cgpa-row">
-                <span>{semester.label}</span>
-                <div>
-                  <i style={{ width: `${(semester.value / 10) * 100}%` }} />
-                </div>
-                <strong>{semester.value}</strong>
-              </div>
-            ))}
-          </div>
-          <article className="mobile-card mobile-education-card">
-            <h3>SKKES English High School & Junior College</h3>
-            <p>Higher Secondary Certificate</p>
-            <span>Completed April 2023, Mumbai</span>
-          </article>
-        </div>
-      </MobileSection>
-
-      <MobileSection id="mobile-achievements" eyebrow="05 Achievements" title="Wins & Milestones">
-        <div className="mobile-project-list">
-          <article className="mobile-card mobile-achievement-card">
-            <span>1st Place</span>
-            <h3>KnowBuild '25 - 8-Hour Startup Hackathon</h3>
-            <p>Built WorkFromCafe, a crowdsourced cafe discovery platform for remote workers.</p>
-          </article>
-          <article className="mobile-card mobile-achievement-card">
-            <span>Finalist - Top 20 / 400+</span>
-            <h3>CodePrix 1.0 - National 24-Hour Hackathon</h3>
-            <p>Advanced through qualifiers and into the national final at ATLAS SkillTech.</p>
-          </article>
-        </div>
-      </MobileSection>
-
-      <MobileSection id="mobile-interests" eyebrow="06 Beyond Code" title="Interests">
-        <div className="mobile-interest-row">
-          {["Football", "Fitness", "Cycling", "Drawing"].map((interest) => (
-            <span key={interest}>{interest}</span>
-          ))}
-        </div>
-      </MobileSection>
-
-      <MobileSection id="mobile-contact" eyebrow="07 Contact" title="Get In Touch">
-        <p className="mobile-contact-copy">
-          Open to internships, collaborations, and interesting problems worth building well.
-        </p>
-        <div className="mobile-actions">
-          <a className="action action-primary" href="mailto:nr14082005@gmail.com">
-            <Mail size={17} />
-            Email Me
-          </a>
-          <a className="action action-secondary" href="tel:+919136115989">
-            <Phone size={17} />
-            Call Me
-          </a>
-        </div>
-        <div className="social-row mobile-social">
-          <a href={GH_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <Github size={18} />
-            GitHub
-          </a>
-          <a href={LI_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            <Linkedin size={18} />
-            LinkedIn
-          </a>
-        </div>
-        <p className="copyright">2026 Nishit Rajput</p>
-      </MobileSection>
-    </main>
-  );
-}
-
 function useScenePerformanceSettings() {
   const getSettings = () => {
     const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
@@ -1182,15 +1022,11 @@ function useScenePerformanceSettings() {
       typeof window !== "undefined" ? window.matchMedia("(pointer: coarse)").matches : false;
     const narrowScreen =
       typeof window !== "undefined" ? window.matchMedia("(max-width: 760px)").matches : false;
-    const mobileMode = coarsePointer || narrowScreen;
-    const lightweight = mobileMode || lowEnd;
+    const lightweight = coarsePointer || narrowScreen || lowEnd;
 
     return {
-      damping: lightweight ? 0.045 : 0.16,
-      distance: lightweight ? 0.58 : 1.05,
-      dpr: lightweight ? 0.75 : 1.5,
+      dpr: lightweight ? 0.7 : 1.5,
       lightweight,
-      mobileMode,
     };
   };
 
@@ -1206,45 +1042,90 @@ function useScenePerformanceSettings() {
   return settings;
 }
 
-function Experience({ lightweight = false }: { lightweight?: boolean }) {
+function useScrollProgress() {
+  const progressRef = useRef(0);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      progressRef.current = scrollHeight > 0 ? window.scrollY / scrollHeight : 0;
+    };
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    const settleTimer = window.setTimeout(update, 600);
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    return () => {
+      window.clearTimeout(settleTimer);
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, []);
+
+  return progressRef;
+}
+
+function Experience({
+  lightweight = false,
+  progressRef,
+}: {
+  lightweight?: boolean;
+  progressRef: ProgressRef;
+}) {
   return (
     <>
       <fog attach="fog" args={["#05070b", 14, 48]} />
-      <DynamicLights />
-      <CameraRig />
+      <DynamicLights progressRef={progressRef} />
+      <CameraRig progressRef={progressRef} />
       <DataGridField count={lightweight ? 140 : 900} />
       {!lightweight && <LightRibbons />}
-
-      <Scroll>
-        <World lightweight={lightweight} />
-      </Scroll>
-
-      <Scroll html style={{ width: "100%" }}>
-        <HtmlSections />
-      </Scroll>
+      <ScrollSyncedWorld lightweight={lightweight} progressRef={progressRef} />
     </>
   );
 }
 
 export default function ImmersiveScene() {
-  const { damping, distance, dpr, lightweight, mobileMode } = useScenePerformanceSettings();
-
-  if (mobileMode) {
-    return <MobilePortfolio />;
-  }
+  const { dpr, lightweight } = useScenePerformanceSettings();
+  const progressRef = useScrollProgress();
 
   return (
     <div id="canvas-root">
-      <Canvas
-        camera={{ position: [0, 0, 14], fov: 45, near: 0.1, far: 120 }}
-        gl={{ antialias: !lightweight, alpha: false, powerPreference: "high-performance" }}
-        dpr={dpr}
-        style={{ background: "#05070b" }}
-      >
-        <ScrollControls pages={PAGES} damping={damping} distance={distance}>
-          <Experience lightweight={lightweight} />
-        </ScrollControls>
-      </Canvas>
+      <div className="canvas-stage" aria-hidden="true">
+        <Canvas
+          camera={{ position: [0, 0, 14], fov: 45, near: 0.1, far: 120 }}
+          gl={{ antialias: !lightweight, alpha: false, powerPreference: "high-performance" }}
+          dpr={dpr}
+          style={{ background: "#05070b" }}
+        >
+          <Experience lightweight={lightweight} progressRef={progressRef} />
+        </Canvas>
+      </div>
+
+      <header className="site-nav">
+        <a className="site-mark" href="#hero" aria-label="Go to hero">
+          NR
+        </a>
+        <nav aria-label="Portfolio sections">
+          <a href="#projects">Work</a>
+          <a href="#skills">Stack</a>
+          <a href="#education">Education</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <a className="site-resume" href={RESUME} target="_blank" rel="noopener noreferrer">
+          Resume
+        </a>
+      </header>
+
+      <main className="portfolio-content">
+        <HtmlSections />
+      </main>
     </div>
   );
 }
