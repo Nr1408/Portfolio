@@ -171,8 +171,8 @@ a {
 .profile-medallion {
   position: relative;
   display: inline-grid;
-  width: 7rem;
-  height: 7rem;
+  width: 8.6rem;
+  height: 8.6rem;
   place-items: center;
   margin: 0 auto 0.95rem;
   padding: 0.32rem;
@@ -199,9 +199,10 @@ a {
 
 .profile-crop {
   position: relative;
-  display: block;
+  display: grid;
   width: 100%;
   height: 100%;
+  place-items: center;
   overflow: hidden;
   border-radius: 50%;
   background: rgba(5, 7, 11, 0.72);
@@ -219,12 +220,13 @@ a {
 
 .profile-crop img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 30%;
-  transform: scale(1.68);
-  transform-origin: 50% 31%;
+  width: auto;
+  height: 80%;
+  max-width: 60%;
+  border-radius: 5px;
+  object-fit: contain;
+  object-position: center;
+  transform: none;
 }
 
 .scene-kicker,
@@ -723,8 +725,8 @@ a {
   }
 
   .profile-medallion {
-    width: 5.45rem;
-    height: 5.45rem;
+    width: 6.35rem;
+    height: 6.35rem;
     margin-bottom: 0.72rem;
     padding: 0.28rem;
   }
@@ -862,8 +864,8 @@ a {
   }
 
   .profile-medallion {
-    width: 5.05rem;
-    height: 5.05rem;
+    width: 5.95rem;
+    height: 5.95rem;
   }
 }
 
@@ -874,8 +876,8 @@ a {
   }
 
   .profile-medallion {
-    width: 6.15rem;
-    height: 6.15rem;
+    width: 7.85rem;
+    height: 7.85rem;
     margin-bottom: 0.72rem;
   }
 
