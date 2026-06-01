@@ -993,28 +993,212 @@ function HtmlSections() {
   );
 }
 
+function MobileSection({
+  id,
+  eyebrow,
+  title,
+  children,
+}: PropsWithChildren<{ id: string; eyebrow: string; title: string }>) {
+  return (
+    <section id={id} className="mobile-section">
+      <p className="mobile-eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function MobilePortfolio() {
+  return (
+    <main className="mobile-root">
+      <section className="mobile-hero" aria-label="Nishit Rajput portfolio">
+        <div className="mobile-profile" aria-label="Portrait of Nishit Rajput">
+          <img src="/nishit-profile.webp" alt="Nishit Rajput" />
+        </div>
+        <p className="mobile-kicker">Full-Stack Developer & CS Student</p>
+        <h1>Nishit Rajput</h1>
+        <p className="mobile-hero-copy">
+          Building practical software with thoughtful UX, scalable systems, and real-world impact.
+        </p>
+        <div className="mobile-actions">
+          <a className="action action-primary" href="#mobile-projects">
+            <ExternalLink size={17} />
+            Projects
+          </a>
+          <a className="action action-secondary" href={RESUME} target="_blank" rel="noopener noreferrer">
+            <Download size={17} />
+            Resume
+          </a>
+        </div>
+        <div className="social-row mobile-social">
+          <a href={GH_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <Github size={18} />
+            GitHub
+          </a>
+          <a href={LI_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <Linkedin size={18} />
+            LinkedIn
+          </a>
+        </div>
+        <a className="mobile-scroll-cue" href="#mobile-about" aria-label="Go to about">
+          <ArrowDown size={21} />
+        </a>
+      </section>
+
+      <MobileSection id="mobile-about" eyebrow="01 About" title="About Me">
+        <div className="mobile-card mobile-about-card">
+          <p>
+            I am a third-year Computer Science student who likes turning rough ideas into useful,
+            reliable products.
+          </p>
+          <p>
+            My work spans full-stack apps, mobile experiences, and machine learning prototypes.
+          </p>
+          <span>Current focus</span>
+          <strong>Real-world apps, strong UX, clean systems</strong>
+        </div>
+      </MobileSection>
+
+      <MobileSection id="mobile-skills" eyebrow="02 Skills" title="Tech Stack">
+        <div className="mobile-skill-grid">
+          {SKILLS.map((group) => (
+            <article key={group.label} className={`mobile-card mobile-skill-card ${group.c}`}>
+              <span>{group.label}</span>
+              <div>
+                {group.items.map((skill) => (
+                  <em key={skill}>{skill}</em>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </MobileSection>
+
+      <MobileSection id="mobile-projects" eyebrow="03 Projects" title="Selected Work">
+        <div className="mobile-project-list">
+          {PROJECTS.map((project) => (
+            <article key={project.title} className="mobile-card mobile-project-card">
+              {project.award && <span className="award">{project.award}</span>}
+              <div className="project-heading">
+                <h3>{project.title}</h3>
+                <a href={project.github} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} GitHub`}>
+                  <Github size={17} />
+                </a>
+              </div>
+              <p>{project.description}</p>
+              <div className="tag-row">
+                {project.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </MobileSection>
+
+      <MobileSection id="mobile-education" eyebrow="04 Education" title="Education">
+        <div className="mobile-education-stack">
+          <article className="mobile-card mobile-education-card">
+            <h3>K.J. Somaiya Institute of Technology</h3>
+            <p>B.Tech in Computer Science</p>
+            <span>Aug 2023 - Present, Mumbai</span>
+          </article>
+          <div className="mobile-cgpa-list" aria-label="CGPA progression">
+            {SEMESTERS.map((semester) => (
+              <div key={semester.label} className="cgpa-row">
+                <span>{semester.label}</span>
+                <div>
+                  <i style={{ width: `${(semester.value / 10) * 100}%` }} />
+                </div>
+                <strong>{semester.value}</strong>
+              </div>
+            ))}
+          </div>
+          <article className="mobile-card mobile-education-card">
+            <h3>SKKES English High School & Junior College</h3>
+            <p>Higher Secondary Certificate</p>
+            <span>Completed April 2023, Mumbai</span>
+          </article>
+        </div>
+      </MobileSection>
+
+      <MobileSection id="mobile-achievements" eyebrow="05 Achievements" title="Wins & Milestones">
+        <div className="mobile-project-list">
+          <article className="mobile-card mobile-achievement-card">
+            <span>1st Place</span>
+            <h3>KnowBuild '25 - 8-Hour Startup Hackathon</h3>
+            <p>Built WorkFromCafe, a crowdsourced cafe discovery platform for remote workers.</p>
+          </article>
+          <article className="mobile-card mobile-achievement-card">
+            <span>Finalist - Top 20 / 400+</span>
+            <h3>CodePrix 1.0 - National 24-Hour Hackathon</h3>
+            <p>Advanced through qualifiers and into the national final at ATLAS SkillTech.</p>
+          </article>
+        </div>
+      </MobileSection>
+
+      <MobileSection id="mobile-interests" eyebrow="06 Beyond Code" title="Interests">
+        <div className="mobile-interest-row">
+          {["Football", "Fitness", "Cycling", "Drawing"].map((interest) => (
+            <span key={interest}>{interest}</span>
+          ))}
+        </div>
+      </MobileSection>
+
+      <MobileSection id="mobile-contact" eyebrow="07 Contact" title="Get In Touch">
+        <p className="mobile-contact-copy">
+          Open to internships, collaborations, and interesting problems worth building well.
+        </p>
+        <div className="mobile-actions">
+          <a className="action action-primary" href="mailto:nr14082005@gmail.com">
+            <Mail size={17} />
+            Email Me
+          </a>
+          <a className="action action-secondary" href="tel:+919136115989">
+            <Phone size={17} />
+            Call Me
+          </a>
+        </div>
+        <div className="social-row mobile-social">
+          <a href={GH_URL} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <Github size={18} />
+            GitHub
+          </a>
+          <a href={LI_URL} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <Linkedin size={18} />
+            LinkedIn
+          </a>
+        </div>
+        <p className="copyright">2026 Nishit Rajput</p>
+      </MobileSection>
+    </main>
+  );
+}
+
 function useScenePerformanceSettings() {
-  const [settings, setSettings] = useState(() => {
+  const getSettings = () => {
     const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
-    return { damping: 0.16, distance: 1.05, dpr: lowEnd ? 0.75 : 1.5, lightweight: lowEnd };
-  });
+    const coarsePointer =
+      typeof window !== "undefined" ? window.matchMedia("(pointer: coarse)").matches : false;
+    const narrowScreen =
+      typeof window !== "undefined" ? window.matchMedia("(max-width: 760px)").matches : false;
+    const mobileMode = coarsePointer || narrowScreen;
+    const lightweight = mobileMode || lowEnd;
+
+    return {
+      damping: lightweight ? 0.045 : 0.16,
+      distance: lightweight ? 0.58 : 1.05,
+      dpr: lightweight ? 0.75 : 1.5,
+      lightweight,
+      mobileMode,
+    };
+  };
+
+  const [settings, setSettings] = useState(getSettings);
 
   useEffect(() => {
-    const update = () => {
-      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
-      const narrowScreen = window.matchMedia("(max-width: 760px)").matches;
-      const lowEnd = (navigator.hardwareConcurrency || 8) <= 4;
-      const lightweight = coarsePointer || narrowScreen || lowEnd;
+    const update = () => setSettings(getSettings());
 
-      setSettings({
-        damping: lightweight ? 0.045 : 0.16,
-        distance: lightweight ? 0.58 : 1.05,
-        dpr: lightweight ? 0.75 : 1.5,
-        lightweight,
-      });
-    };
-
-    update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
   }, []);
@@ -1043,7 +1227,11 @@ function Experience({ lightweight = false }: { lightweight?: boolean }) {
 }
 
 export default function ImmersiveScene() {
-  const { damping, distance, dpr, lightweight } = useScenePerformanceSettings();
+  const { damping, distance, dpr, lightweight, mobileMode } = useScenePerformanceSettings();
+
+  if (mobileMode) {
+    return <MobilePortfolio />;
+  }
 
   return (
     <div id="canvas-root">
