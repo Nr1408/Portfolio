@@ -1108,21 +1108,6 @@ export default function ImmersiveScene() {
         </Canvas>
       </div>
 
-      <header className="site-nav">
-        <a className="site-mark" href="#hero" aria-label="Go to hero">
-          NR
-        </a>
-        <nav aria-label="Portfolio sections">
-          <a href="#projects">Work</a>
-          <a href="#skills">Stack</a>
-          <a href="#education">Education</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <a className="site-resume" href={RESUME} target="_blank" rel="noopener noreferrer">
-          Resume
-        </a>
-      </header>
-
       <main className="portfolio-content">
         <HtmlSections />
       </main>

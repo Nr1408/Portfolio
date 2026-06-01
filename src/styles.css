@@ -153,71 +153,6 @@ a {
   touch-action: pan-y;
 }
 
-.site-nav {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  left: 1rem;
-  z-index: 4;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 1rem;
-  width: min(100% - 2rem, 70rem);
-  margin: 0 auto;
-  padding: 0.58rem 0.72rem;
-  border: 1px solid rgba(203, 213, 225, 0.14);
-  border-radius: 8px;
-  background: rgba(5, 7, 11, 0.54);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.18);
-}
-
-.site-nav a {
-  color: var(--text-2);
-  text-decoration: none;
-  transition: color 170ms ease, border-color 170ms ease, background-color 170ms ease;
-}
-
-.site-mark {
-  display: inline-grid;
-  width: 2.25rem;
-  height: 2.25rem;
-  place-items: center;
-  border: 1px solid rgba(125, 211, 252, 0.34);
-  border-radius: 8px;
-  color: var(--cyan);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.site-nav nav {
-  display: flex;
-  justify-content: center;
-  gap: 0.28rem;
-}
-
-.site-nav nav a,
-.site-resume {
-  min-height: 2.25rem;
-  border-radius: 8px;
-  padding: 0.56rem 0.82rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-.site-nav nav a:hover,
-.site-resume:hover,
-.site-mark:hover {
-  color: var(--cyan);
-  background: rgba(125, 211, 252, 0.08);
-}
-
-.site-resume {
-  border: 1px solid rgba(203, 213, 225, 0.14);
-}
-
 .portfolio-content {
   position: relative;
   z-index: 2;
@@ -232,13 +167,13 @@ a {
   width: 100%;
   min-height: 92svh;
   padding: 5.25rem 6vw;
-  scroll-margin-top: 5rem;
+  scroll-margin-top: 1.25rem;
   pointer-events: none;
 }
 
 .scene-hero {
   min-height: 100svh;
-  padding-top: 6.25rem;
+  padding-top: 4.8rem;
 }
 
 #achievements {
@@ -897,7 +832,7 @@ a {
 
   .scene-hero {
     min-height: 100svh;
-    padding-top: 5.6rem;
+    padding-top: 4.3rem;
   }
 
   #achievements {
@@ -914,26 +849,6 @@ a {
   #contact {
     min-height: 72svh;
     padding-top: 2rem;
-  }
-
-  .site-nav {
-    top: 0.7rem;
-    right: 0.75rem;
-    left: 0.75rem;
-    width: min(100% - 1.5rem, 25rem);
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-    gap: 0.7rem;
-    padding: 0.5rem;
-  }
-
-  .site-nav nav {
-    display: none;
-  }
-
-  .site-resume {
-    min-height: 2.15rem;
-    padding: 0.52rem 0.78rem;
   }
 
   .scene-copy {
