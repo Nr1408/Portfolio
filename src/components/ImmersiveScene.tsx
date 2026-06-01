@@ -507,19 +507,19 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
   const heroEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(4.8, 3.4, 1.8)), []);
   const heroFrameEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.04)), []);
   const panelEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2, 1.2, 0.06)), []);
-  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 2) : HERO_ORBS;
-  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 2) : ABOUT_CRYSTALS;
-  const skillNodes = lightweight ? SKILL_NODES.slice(0, 5) : SKILL_NODES;
-  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 4) : PROJECT_PLANES;
-  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 4) : ACHIEVEMENT_PARTICLES;
-  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 4) : CONTACT_PARTICLES;
-  const educationDots = lightweight ? 12 : 34;
+  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 5) : HERO_ORBS;
+  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 4) : ABOUT_CRYSTALS;
+  const skillNodes = lightweight ? SKILL_NODES.slice(0, 8) : SKILL_NODES;
+  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 7) : PROJECT_PLANES;
+  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 7) : ACHIEVEMENT_PARTICLES;
+  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 7) : CONTACT_PARTICLES;
+  const educationDots = lightweight ? 22 : 34;
   const interestNodes = [
     { color: "#7dd3fc", position: [-2.8, 1, -1] as Vec3 },
     { color: "#a5b4fc", position: [2.5, -0.5, 0.5] as Vec3 },
     { color: "#86efac", position: [-1.1, -2, 2] as Vec3 },
     { color: "#fcd34d", position: [1.6, 2.1, -1.5] as Vec3 },
-  ].slice(0, lightweight ? 2 : 4);
+  ].slice(0, lightweight ? 3 : 4);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -562,7 +562,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
           color={portal.color}
           accent={portal.accent}
           tilt={portal.tilt}
-          density={lightweight ? (index === 0 ? 3 : 2) : index === 0 ? 6 : 5}
+          density={lightweight ? (index === 0 ? 5 : 3) : index === 0 ? 6 : 5}
         />
       ))}
 
@@ -601,7 +601,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
           </mesh>
         </group>
         {heroOrbs.map((orb, index) => (
-          <SceneOrb key={`hero-${index}`} orb={orb} shape="box" animated={!lightweight} />
+          <SceneOrb key={`hero-${index}`} orb={orb} shape="box" animated={!lightweight || index < 3} />
         ))}
       </group>
 
@@ -1022,10 +1022,13 @@ function useScenePerformanceSettings() {
       typeof window !== "undefined" ? window.matchMedia("(pointer: coarse)").matches : false;
     const narrowScreen =
       typeof window !== "undefined" ? window.matchMedia("(max-width: 760px)").matches : false;
-    const lightweight = coarsePointer || narrowScreen || lowEnd;
+    const mobileScene = coarsePointer || narrowScreen;
+    const lightweight = mobileScene || lowEnd;
+    const pixelRatio = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+    const maxDpr = lowEnd ? 1.4 : mobileScene ? 2 : 1.75;
 
     return {
-      dpr: lightweight ? 0.7 : 1.5,
+      dpr: Math.min(Math.max(pixelRatio, 1), maxDpr),
       lightweight,
     };
   };
@@ -1085,7 +1088,7 @@ function Experience({
       <DynamicLights progressRef={progressRef} />
       <CameraRig progressRef={progressRef} />
       <DataGridField count={lightweight ? 140 : 900} />
-      {!lightweight && <LightRibbons />}
+      <LightRibbons />
       <ScrollSyncedWorld lightweight={lightweight} progressRef={progressRef} />
     </>
   );
@@ -1100,8 +1103,10 @@ export default function ImmersiveScene() {
       <div className="canvas-stage" aria-hidden="true">
         <Canvas
           camera={{ position: [0, 0, 14], fov: 45, near: 0.1, far: 120 }}
-          gl={{ antialias: !lightweight, alpha: false, powerPreference: "high-performance" }}
+          fallback={<div className="canvas-fallback" />}
+          gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
           dpr={dpr}
+          resize={{ scroll: false, debounce: { scroll: 120, resize: 0 } }}
           style={{ background: "#05070b" }}
         >
           <Experience lightweight={lightweight} progressRef={progressRef} />

@@ -145,12 +145,29 @@ a {
   position: fixed;
   inset: 0;
   z-index: 0;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100svh;
   pointer-events: none;
+  transform: translateZ(0);
 }
 
 #canvas-root canvas {
   display: block;
+  width: 100% !important;
+  height: 100% !important;
   touch-action: pan-y;
+}
+
+.canvas-fallback {
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(125, 211, 252, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, rgba(125, 211, 252, 0.18), transparent 12rem),
+    #05070b;
+  background-size: 4.5rem 4.5rem, 4.5rem 4.5rem, auto, auto;
 }
 
 .portfolio-content {
