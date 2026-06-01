@@ -241,6 +241,22 @@ a {
   padding-top: 6.25rem;
 }
 
+#achievements {
+  min-height: 74svh;
+  padding-bottom: 2.7rem;
+}
+
+#interests {
+  min-height: 44svh;
+  padding-top: 2.7rem;
+  padding-bottom: 2.7rem;
+}
+
+#contact {
+  min-height: 76svh;
+  padding-top: 2.7rem;
+}
+
 .scene-copy {
   width: min(100%, 43rem);
   text-align: center;
@@ -882,6 +898,22 @@ a {
   .scene-hero {
     min-height: 100svh;
     padding-top: 5.6rem;
+  }
+
+  #achievements {
+    min-height: auto;
+    padding-bottom: 2rem;
+  }
+
+  #interests {
+    min-height: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  #contact {
+    min-height: 72svh;
+    padding-top: 2rem;
   }
 
   .site-nav {
