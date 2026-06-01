@@ -494,6 +494,12 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
   const heroEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(4.8, 3.4, 1.8)), []);
   const heroFrameEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.04)), []);
   const panelEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2, 1.2, 0.06)), []);
+  const heroOrbs = lightweight ? HERO_ORBS.slice(0, 4) : HERO_ORBS;
+  const aboutCrystals = lightweight ? ABOUT_CRYSTALS.slice(0, 4) : ABOUT_CRYSTALS;
+  const skillNodes = lightweight ? SKILL_NODES.slice(0, 8) : SKILL_NODES;
+  const projectPlanes = lightweight ? PROJECT_PLANES.slice(0, 7) : PROJECT_PLANES;
+  const achievementParticles = lightweight ? ACHIEVEMENT_PARTICLES.slice(0, 7) : ACHIEVEMENT_PARTICLES;
+  const contactParticles = lightweight ? CONTACT_PARTICLES.slice(0, 8) : CONTACT_PARTICLES;
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -574,7 +580,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
             <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.2} transparent opacity={0.15} />
           </mesh>
         </group>
-        {HERO_ORBS.map((orb, index) => (
+        {heroOrbs.map((orb, index) => (
           <SceneOrb key={`hero-${index}`} orb={orb} shape="box" />
         ))}
       </group>
@@ -591,13 +597,13 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
             <lineBasicMaterial color="#7dd3fc" transparent opacity={0.15} />
           </lineSegments>
         </group>
-        {ABOUT_CRYSTALS.map((orb, index) => (
+        {aboutCrystals.map((orb, index) => (
           <SceneOrb key={`about-${index}`} orb={orb} shape="box" />
         ))}
       </group>
 
       <group position={[0, -vh * 2, 0]}>
-        {SKILL_NODES.map((orb, index) => (
+        {skillNodes.map((orb, index) => (
           <SceneOrb key={`skill-${index}`} orb={orb} />
         ))}
         <lineSegments>
@@ -606,13 +612,13 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
               attach="attributes-position"
               array={
                 new Float32Array(
-                  SKILL_NODES.flatMap((node, index) => {
-                    const next = SKILL_NODES[(index + 3) % SKILL_NODES.length];
+                  skillNodes.flatMap((node, index) => {
+                    const next = skillNodes[(index + 3) % skillNodes.length];
                     return [...node.position, ...next.position];
                   }),
                 )
               }
-              count={SKILL_NODES.length * 2}
+              count={skillNodes.length * 2}
               itemSize={3}
             />
           </bufferGeometry>
@@ -621,7 +627,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
       </group>
 
       <group ref={projectWall} position={[0, -vh * 3, 0]}>
-        {PROJECT_PLANES.map((plane, index) => (
+        {projectPlanes.map((plane, index) => (
           <Float key={`project-${index}`} speed={0.55 + index * 0.05} rotationIntensity={0.2} floatIntensity={0.45}>
             <group position={plane.position} rotation={plane.rotation}>
               <mesh>
@@ -667,7 +673,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
             <meshStandardMaterial color="#a5b4fc" emissive="#a5b4fc" emissiveIntensity={0.14} wireframe transparent opacity={0.22} />
           </mesh>
         </group>
-        {ACHIEVEMENT_PARTICLES.map((orb, index) => (
+        {achievementParticles.map((orb, index) => (
           <SceneOrb key={`achievement-${index}`} orb={orb} shape="octa" />
         ))}
       </group>
@@ -711,7 +717,7 @@ function World({ lightweight = false }: { lightweight?: boolean }) {
             <meshStandardMaterial color="#7dd3fc" emissive="#7dd3fc" emissiveIntensity={0.1} wireframe transparent opacity={0.16} />
           </mesh>
         </group>
-        {CONTACT_PARTICLES.map((orb, index) => (
+        {contactParticles.map((orb, index) => (
           <SceneOrb key={`contact-${index}`} orb={orb} />
         ))}
       </group>
@@ -945,7 +951,7 @@ function HtmlSections() {
 function useScenePerformanceSettings() {
   const [settings, setSettings] = useState(() => {
     const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
-    return { damping: 0.22, distance: 1.2, dpr: lowEnd ? 1 : 1.5, lightweight: lowEnd };
+    return { damping: 0.16, distance: 1.05, dpr: lowEnd ? 1 : 1.5, lightweight: lowEnd };
   });
 
   useEffect(() => {
@@ -956,8 +962,8 @@ function useScenePerformanceSettings() {
       const lightweight = coarsePointer || narrowScreen || lowEnd;
 
       setSettings({
-        damping: lightweight ? 0.08 : 0.22,
-        distance: lightweight ? 0.78 : 1.2,
+        damping: lightweight ? 0.045 : 0.16,
+        distance: lightweight ? 0.58 : 1.05,
         dpr: lightweight ? 1 : 1.5,
         lightweight,
       });
@@ -977,7 +983,7 @@ function Experience({ lightweight = false }: { lightweight?: boolean }) {
       <fog attach="fog" args={["#05070b", 14, 48]} />
       <DynamicLights />
       <CameraRig />
-      <DataGridField count={lightweight ? 420 : 900} />
+      <DataGridField count={lightweight ? 260 : 900} />
       <LightRibbons />
 
       <Scroll>
