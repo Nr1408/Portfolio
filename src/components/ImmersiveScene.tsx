@@ -246,7 +246,7 @@ function MobileRenderDriver({ enabled }: { enabled: boolean }) {
   return null;
 }
 
-function CameraRig({ progressRef }: { progressRef: ProgressRef }) {
+function CameraRig({ progressRef, mobileScene }: { progressRef: ProgressRef; mobileScene: boolean }) {
   useFrame((state, delta) => {
     const { index, smooth } = currentSegment(progressRef.current, CAMERA_POINTS.length);
     const a = CAMERA_POINTS[index];
@@ -262,7 +262,8 @@ function CameraRig({ progressRef }: { progressRef: ProgressRef }) {
     state.camera.lookAt(0, 0, 0);
 
     const camera = state.camera as THREE.PerspectiveCamera;
-    camera.fov = THREE.MathUtils.damp(camera.fov, 40 + smooth * 4, 4, delta);
+    const baseFov = mobileScene ? 60 : 40;
+    camera.fov = THREE.MathUtils.damp(camera.fov, baseFov + smooth * (mobileScene ? 6 : 4), 4, delta);
     camera.updateProjectionMatrix();
   });
 
@@ -461,7 +462,7 @@ function Experience({
       <fog attach="fog" args={["#050505", 12, 42]} />
       <MobileRenderDriver enabled={mobileScene} />
       <SceneLights progressRef={progressRef} />
-      <CameraRig progressRef={progressRef} />
+      <CameraRig progressRef={progressRef} mobileScene={mobileScene} />
       <BackgroundField lightweight={lightweight} />
       <ScrollWorld lightweight={lightweight} progressRef={progressRef} />
     </>
