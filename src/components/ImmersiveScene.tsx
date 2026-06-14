@@ -4,6 +4,7 @@ import {
   ArrowDown,
   Download,
   ExternalLink,
+  Gem,
   Github,
   Linkedin,
   Mail,
@@ -29,11 +30,29 @@ const SECTION_IDS = [
   "hero",
   "about",
   "skills",
+  "experience",
   "projects",
   "education",
   "achievements",
   "interests",
   "contact",
+];
+
+const EXPERIENCE = [
+  {
+    role: "Backend Intern",
+    company: "Nexkirana",
+    date: "Feb 2026 - May 2026 · 4 mos",
+    location: "Remote",
+    skill: "Back-End Web Development",
+  },
+  {
+    role: "AI/ML Intern",
+    company: "The AgriOrbit Technology · Internship",
+    date: "Jan 2026 - Mar 2026 · 3 mos",
+    location: "Mumbai, Maharashtra, India",
+    skill: "Machine Learning and Artificial Intelligence (AI)",
+  },
 ];
 
 const SKILLS = [
@@ -101,6 +120,7 @@ const CAMERA_POINTS: Vec3[] = [
   [0, 0.1, 12.2],
   [3.5, 1.8, 9.5],
   [-3.6, -1.5, 9.8],
+  [2.4, 1.2, 8.9],
   [0.6, 2.9, 8.4],
   [3.9, -2.4, 9],
   [-3.8, 2.3, 9.7],
@@ -112,6 +132,7 @@ const MOTIF_SCALES = [
   [8.2, 4.8, 1],
   [5.7, 3.4, 1],
   [6.6, 4.1, 1],
+  [6.0, 3.8, 1],
   [7.6, 4.7, 1],
   [5.8, 4.8, 1],
   [5.5, 3.8, 1],
@@ -400,7 +421,7 @@ function SectionMotif({
         </lineSegments>
       ))}
 
-      {index === 3 &&
+      {index === 4 &&
         Array.from({ length: lightweight ? 4 : 8 }, (_, panel) => (
           <lineSegments
             key={`project-panel-${panel}`}
@@ -412,7 +433,7 @@ function SectionMotif({
           </lineSegments>
         ))}
 
-      {index === 4 && (
+      {index === 5 && (
         <mesh rotation={[0.18, 0, Math.PI / 4]}>
           <coneGeometry args={[2.2, 4.4, 4]} />
           <meshBasicMaterial color="#c7f7ff" wireframe transparent opacity={0.18} />
@@ -564,7 +585,29 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="projects" eyebrow="03 / Work" title="Selected Projects" wide>
+      <SceneSection id="experience" eyebrow="03 / Experience" title="Work Experience" wide>
+        <div className="project-list">
+          {EXPERIENCE.map((exp) => (
+            <article key={exp.company} className="surface project-card">
+              <div>
+                <h3>{exp.role}</h3>
+                <p>{exp.company} · {exp.date}</p>
+                <span className="section-eyebrow" style={{ textTransform: 'none', letterSpacing: '0', fontSize: '0.82rem' }}>{exp.location}</span>
+              </div>
+              <div className="project-meta">
+                <div className="tag-row">
+                  <span>
+                    <Gem size={14} style={{ marginRight: '4px' }} />
+                    {exp.skill}
+                  </span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </SceneSection>
+
+      <SceneSection id="projects" eyebrow="04 / Work" title="Selected Projects" wide>
         <div className="project-list">
           {PROJECTS.map((project) => (
             <article key={project.title} className="surface project-card">
@@ -588,7 +631,7 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="education" eyebrow="04 / Education" title="Education">
+      <SceneSection id="education" eyebrow="05 / Education" title="Education">
         <div className="surface education-block">
           <h3>K.J. Somaiya Institute of Technology</h3>
           <p>B.Tech in Computer Science</p>
@@ -612,7 +655,7 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="achievements" eyebrow="05 / Highlights" title="Wins & Milestones">
+      <SceneSection id="achievements" eyebrow="06 / Highlights" title="Wins & Milestones">
         <div className="achievement-list">
           <article className="surface">
             <span>1st Place</span>
@@ -627,7 +670,7 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="interests" eyebrow="06 / Beyond Code" title="Interests">
+      <SceneSection id="interests" eyebrow="07 / Beyond Code" title="Interests">
         <div className="interest-row">
           {["Football", "Fitness", "Cycling", "Drawing"].map((interest) => (
             <span key={interest}>{interest}</span>
@@ -635,7 +678,7 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="contact" eyebrow="07 / Contact" title="Get In Touch">
+      <SceneSection id="contact" eyebrow="08 / Contact" title="Get In Touch">
         <p className="contact-copy">
           Open to internships, collaborations, and interesting problems worth building well.
         </p>
