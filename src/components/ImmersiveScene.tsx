@@ -22,7 +22,7 @@ type SceneSettings = {
 };
 
 const RESUME =
-  "https://drive.google.com/file/d/1BQAB5HDXa2AYEe1-YYs18O4uS-7t665K/view?usp=drive_link";
+  "https://drive.google.com/file/d/1sudSOaoW2YTRi3rlVxw5oWXN8yM5IMN8/view?usp=drive_link";
 const GH_URL = "https://github.com/Nr1408";
 const LI_URL = "https://www.linkedin.com/in/nishit-rajput-0a12a5320/";
 
@@ -45,6 +45,12 @@ const EXPERIENCE = [
     date: "Feb 2026 - May 2026 · 4 mos",
     location: "Remote",
     skill: "Back-End Web Development",
+    description: [
+      "Built order fulfillment and cancellation workflows.",
+      "Integrated QR code scanning for delivery validation.",
+      "Implemented backend multi-language support.",
+      "Optimized API endpoints, database, and authentication."
+    ],
   },
   {
     role: "AI/ML Intern",
@@ -593,6 +599,13 @@ function HtmlSections() {
                 <h3>{exp.role}</h3>
                 <p>{exp.company} · {exp.date}</p>
                 <span className="section-eyebrow" style={{ textTransform: 'none', letterSpacing: '0', fontSize: '0.82rem' }}>{exp.location}</span>
+                {exp.description && (
+                  <ul style={{ marginTop: '0.75rem', paddingLeft: '1.2rem', color: 'var(--text-2)', fontSize: '0.94rem', lineHeight: '1.62' }}>
+                    {exp.description.map((point, i) => (
+                      <li key={i} style={{ marginBottom: '0.35rem' }}>{point}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <div className="project-meta">
                 <div className="tag-row">
