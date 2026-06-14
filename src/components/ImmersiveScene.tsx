@@ -58,6 +58,10 @@ const EXPERIENCE = [
     date: "Jan 2026 - Mar 2026 · 3 mos",
     location: "Mumbai, Maharashtra, India",
     skill: "Machine Learning and Artificial Intelligence (AI)",
+    description: [
+      "Built and fine-tuned ML models for agricultural use cases using Python and TensorFlow.",
+      "Developed AI-driven data pipelines and model evaluation workflows."
+    ],
   },
 ];
 
