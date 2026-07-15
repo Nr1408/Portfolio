@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type MutableRefObject, type PropsWithChildren } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+  type PropsWithChildren,
+} from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   ArrowDown,
@@ -49,7 +56,7 @@ const EXPERIENCE = [
       "Built order fulfillment and cancellation workflows.",
       "Integrated QR code scanning for delivery validation.",
       "Implemented backend multi-language support.",
-      "Optimized API endpoints, database, and authentication."
+      "Optimized API endpoints, database, and authentication.",
     ],
   },
   {
@@ -60,7 +67,7 @@ const EXPERIENCE = [
     skill: "Machine Learning and Artificial Intelligence (AI)",
     description: [
       "Built and fine-tuned ML models for agricultural use cases using Python and TensorFlow.",
-      "Developed AI-driven data pipelines and model evaluation workflows."
+      "Developed AI-driven data pipelines and model evaluation workflows.",
     ],
   },
 ];
@@ -170,14 +177,22 @@ function currentSegment(value: number, count: number) {
 
 function useScenePerformanceSettings() {
   const getSettings = (): SceneSettings => {
-    const lowEnd = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency || 8) <= 4 : false;
+    const lowEnd =
+      typeof navigator !== "undefined"
+        ? (navigator.hardwareConcurrency || 8) <= 4
+        : false;
     const coarsePointer =
-      typeof window !== "undefined" ? window.matchMedia("(pointer: coarse)").matches : false;
+      typeof window !== "undefined"
+        ? window.matchMedia("(pointer: coarse)").matches
+        : false;
     const narrowScreen =
-      typeof window !== "undefined" ? window.matchMedia("(max-width: 760px)").matches : false;
+      typeof window !== "undefined"
+        ? window.matchMedia("(max-width: 760px)").matches
+        : false;
     const mobileScene = coarsePointer || narrowScreen;
     const lightweight = mobileScene || lowEnd;
-    const pixelRatio = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
+    const pixelRatio =
+      typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1;
     const maxDpr = lowEnd ? 1.1 : mobileScene ? 1.35 : 1.7;
 
     return {
@@ -278,9 +293,18 @@ function MobileRenderDriver({ enabled }: { enabled: boolean }) {
   return null;
 }
 
-function CameraRig({ progressRef, mobileScene }: { progressRef: ProgressRef; mobileScene: boolean }) {
+function CameraRig({
+  progressRef,
+  mobileScene,
+}: {
+  progressRef: ProgressRef;
+  mobileScene: boolean;
+}) {
   useFrame((state, delta) => {
-    const { index, smooth } = currentSegment(progressRef.current, CAMERA_POINTS.length);
+    const { index, smooth } = currentSegment(
+      progressRef.current,
+      CAMERA_POINTS.length,
+    );
     const a = CAMERA_POINTS[index];
     const b = CAMERA_POINTS[index + 1] ?? a;
 
@@ -288,14 +312,34 @@ function CameraRig({ progressRef, mobileScene }: { progressRef: ProgressRef; mob
     const y = THREE.MathUtils.lerp(a[1], b[1], smooth);
     const z = THREE.MathUtils.lerp(a[2], b[2], smooth);
 
-    state.camera.position.x = THREE.MathUtils.damp(state.camera.position.x, x, 3.2, delta);
-    state.camera.position.y = THREE.MathUtils.damp(state.camera.position.y, y, 3.2, delta);
-    state.camera.position.z = THREE.MathUtils.damp(state.camera.position.z, z, 3.2, delta);
+    state.camera.position.x = THREE.MathUtils.damp(
+      state.camera.position.x,
+      x,
+      3.2,
+      delta,
+    );
+    state.camera.position.y = THREE.MathUtils.damp(
+      state.camera.position.y,
+      y,
+      3.2,
+      delta,
+    );
+    state.camera.position.z = THREE.MathUtils.damp(
+      state.camera.position.z,
+      z,
+      3.2,
+      delta,
+    );
     state.camera.lookAt(0, 0, 0);
 
     const camera = state.camera as THREE.PerspectiveCamera;
     const baseFov = mobileScene ? 60 : 40;
-    camera.fov = THREE.MathUtils.damp(camera.fov, baseFov + smooth * (mobileScene ? 6 : 4), 4, delta);
+    camera.fov = THREE.MathUtils.damp(
+      camera.fov,
+      baseFov + smooth * (mobileScene ? 6 : 4),
+      4,
+      delta,
+    );
     camera.updateProjectionMatrix();
   });
 
@@ -370,13 +414,30 @@ function BackgroundField({ lightweight }: { lightweight: boolean }) {
     <group>
       <points ref={pointsRef}>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" array={positions} count={count} itemSize={3} />
+          <bufferAttribute
+            attach="attributes-position"
+            array={positions}
+            count={count}
+            itemSize={3}
+          />
         </bufferGeometry>
-        <pointsMaterial color="#dce7ea" size={0.025} sizeAttenuation transparent opacity={0.28} depthWrite={false} />
+        <pointsMaterial
+          color="#dce7ea"
+          size={0.025}
+          sizeAttenuation
+          transparent
+          opacity={0.28}
+          depthWrite={false}
+        />
       </points>
       <lineSegments>
         <bufferGeometry>
-          <bufferAttribute attach="attributes-position" array={grid} count={grid.length / 3} itemSize={3} />
+          <bufferAttribute
+            attach="attributes-position"
+            array={grid}
+            count={grid.length / 3}
+            itemSize={3}
+          />
         </bufferGeometry>
         <lineBasicMaterial color="#9aa5a8" transparent opacity={0.06} />
       </lineSegments>
@@ -394,8 +455,14 @@ function SectionMotif({
   y: number;
 }) {
   const group = useRef<THREE.Group>(null);
-  const frameGeometry = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.06)), []);
-  const panelGeometry = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1.2, 0.68, 0.08)), []);
+  const frameGeometry = useMemo(
+    () => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 0.06)),
+    [],
+  );
+  const panelGeometry = useMemo(
+    () => new THREE.EdgesGeometry(new THREE.BoxGeometry(1.2, 0.68, 0.08)),
+    [],
+  );
   const nodes = useMemo(
     () =>
       Array.from({ length: lightweight ? 5 : 9 }, (_, i) => {
@@ -403,7 +470,11 @@ function SectionMotif({
         const radius = range(index * 60 + i, 2.4, 4.8);
         return {
           color: i % 3 === 0 ? "#e8eef0" : "#9fb6bb",
-          position: [Math.cos(theta) * radius, range(index * 90 + i, -2.2, 2.2), Math.sin(theta) * radius] as Vec3,
+          position: [
+            Math.cos(theta) * radius,
+            range(index * 90 + i, -2.2, 2.2),
+            Math.sin(theta) * radius,
+          ] as Vec3,
           size: range(index * 120 + i, 0.055, 0.13),
         };
       }),
@@ -426,9 +497,17 @@ function SectionMotif({
           key={`frame-${index}-${layer}`}
           geometry={frameGeometry}
           scale={[sx + layer * 1.05, sy + layer * 0.62, sz]}
-          rotation={[0.08 * layer, 0.04 * index, (index * 0.12 + layer * 0.18) % Math.PI]}
+          rotation={[
+            0.08 * layer,
+            0.04 * index,
+            (index * 0.12 + layer * 0.18) % Math.PI,
+          ]}
         >
-          <lineBasicMaterial color={layer % 2 ? "#879194" : "#e2edef"} transparent opacity={0.18 - layer * 0.03} />
+          <lineBasicMaterial
+            color={layer % 2 ? "#879194" : "#e2edef"}
+            transparent
+            opacity={0.18 - layer * 0.03}
+          />
         </lineSegments>
       ))}
 
@@ -437,7 +516,11 @@ function SectionMotif({
           <lineSegments
             key={`project-panel-${panel}`}
             geometry={panelGeometry}
-            position={[((panel % 4) - 1.5) * 1.7, (Math.floor(panel / 4) - 0.5) * 1.25, range(panel + 20, -2.8, 0.6)]}
+            position={[
+              ((panel % 4) - 1.5) * 1.7,
+              (Math.floor(panel / 4) - 0.5) * 1.25,
+              range(panel + 20, -2.8, 0.6),
+            ]}
             rotation={[0.04 * panel, 0.16 - panel * 0.035, 0.08 * panel]}
           >
             <lineBasicMaterial color="#dce7ea" transparent opacity={0.2} />
@@ -447,7 +530,12 @@ function SectionMotif({
       {index === 5 && (
         <mesh rotation={[0.18, 0, Math.PI / 4]}>
           <coneGeometry args={[2.2, 4.4, 4]} />
-          <meshBasicMaterial color="#c7f7ff" wireframe transparent opacity={0.18} />
+          <meshBasicMaterial
+            color="#c7f7ff"
+            wireframe
+            transparent
+            opacity={0.18}
+          />
         </mesh>
       )}
 
@@ -461,20 +549,37 @@ function SectionMotif({
   );
 }
 
-function ScrollWorld({ lightweight, progressRef }: { lightweight: boolean; progressRef: ProgressRef }) {
+function ScrollWorld({
+  lightweight,
+  progressRef,
+}: {
+  lightweight: boolean;
+  progressRef: ProgressRef;
+}) {
   const group = useRef<THREE.Group>(null);
   const { viewport } = useThree();
 
   useFrame((_, delta) => {
     if (!group.current) return;
-    const targetY = progressRef.current * (SECTION_IDS.length - 1) * viewport.height;
-    group.current.position.y = THREE.MathUtils.damp(group.current.position.y, targetY, 4, delta);
+    const targetY =
+      progressRef.current * (SECTION_IDS.length - 1) * viewport.height;
+    group.current.position.y = THREE.MathUtils.damp(
+      group.current.position.y,
+      targetY,
+      4,
+      delta,
+    );
   });
 
   return (
     <group ref={group}>
       {SECTION_IDS.map((id, index) => (
-        <SectionMotif key={id} index={index} y={-viewport.height * index} lightweight={lightweight} />
+        <SectionMotif
+          key={id}
+          index={index}
+          y={-viewport.height * index}
+          lightweight={lightweight}
+        />
       ))}
     </group>
   );
@@ -507,9 +612,17 @@ function SceneSection({
   title,
   wide = false,
   children,
-}: PropsWithChildren<{ id: string; eyebrow: string; title: string; wide?: boolean }>) {
+}: PropsWithChildren<{
+  id: string;
+  eyebrow: string;
+  title: string;
+  wide?: boolean;
+}>) {
   return (
-    <section id={id} className={`folio-section${id === "hero" ? " hero-section" : ""}`}>
+    <section
+      id={id}
+      className={`folio-section${id === "hero" ? " hero-section" : ""}`}
+    >
       <div className={wide ? "section-inner section-wide" : "section-inner"}>
         {id !== "hero" && (
           <>
@@ -528,22 +641,33 @@ function HtmlSections() {
     <main className="portfolio-content">
       <SceneSection id="hero" eyebrow="00" title="Nishit Rajput" wide>
         <div className="hero-layout">
-          <div className="portrait-frame" aria-label="Portrait of Nishit Rajput">
+          <div
+            className="portrait-frame"
+            aria-label="Portrait of Nishit Rajput"
+          >
             <img src="/nishit-profile.jpg" alt="Nishit Rajput" />
           </div>
 
           <div className="hero-copy">
-            <p className="hero-kicker">Full-stack developer / Computer Science student</p>
+            <p className="hero-kicker">
+              Full-stack developer / Computer Science student
+            </p>
             <h1>Nishit Rajput</h1>
             <p className="hero-text">
-              I build practical software with focused interfaces, reliable systems, and real-world utility.
+              I build practical software with focused interfaces, reliable
+              systems, and real-world utility.
             </p>
             <div className="hero-actions">
               <a className="action action-primary" href="#projects">
                 <ExternalLink size={17} />
                 View Work
               </a>
-              <a className="action action-secondary" href={RESUME} target="_blank" rel="noopener noreferrer">
+              <a
+                className="action action-secondary"
+                href={RESUME}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Download size={17} />
                 Resume
               </a>
@@ -568,11 +692,13 @@ function HtmlSections() {
       <SceneSection id="about" eyebrow="01 / About" title="Built For Real Use">
         <div className="copy-block">
           <p>
-            I am a fourth-year Computer Science student who enjoys turning rough ideas into usable products.
-            My work spans full-stack apps, mobile experiences, and machine learning prototypes.
+            I am a fourth-year Computer Science student who enjoys turning rough
+            ideas into usable products. My work spans full-stack apps, mobile
+            experiences, and machine learning prototypes.
           </p>
           <p>
-            I care about fast interfaces, clean architecture, and products that keep working after the demo.
+            I care about fast interfaces, clean architecture, and products that
+            keep working after the demo.
           </p>
         </div>
         <div className="focus-line">
@@ -581,7 +707,12 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="skills" eyebrow="02 / Stack" title="Technical Range" wide>
+      <SceneSection
+        id="skills"
+        eyebrow="02 / Stack"
+        title="Technical Range"
+        wide
+      >
         <div className="skill-grid">
           {SKILLS.map((group) => (
             <article key={group.label} className="surface skill-card">
@@ -596,18 +727,44 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="experience" eyebrow="03 / Experience" title="Work Experience" wide>
+      <SceneSection
+        id="experience"
+        eyebrow="03 / Experience"
+        title="Work Experience"
+        wide
+      >
         <div className="project-list">
           {EXPERIENCE.map((exp) => (
             <article key={exp.company} className="surface project-card">
               <div>
                 <h3>{exp.role}</h3>
-                <p>{exp.company} · {exp.date}</p>
-                <span className="section-eyebrow" style={{ textTransform: 'none', letterSpacing: '0', fontSize: '0.82rem' }}>{exp.location}</span>
+                <p>
+                  {exp.company} · {exp.date}
+                </p>
+                <span
+                  className="section-eyebrow"
+                  style={{
+                    textTransform: "none",
+                    letterSpacing: "0",
+                    fontSize: "0.82rem",
+                  }}
+                >
+                  {exp.location}
+                </span>
                 {exp.description && (
-                  <ul style={{ marginTop: '0.75rem', paddingLeft: '1.2rem', color: 'var(--text-2)', fontSize: '0.94rem', lineHeight: '1.62' }}>
+                  <ul
+                    style={{
+                      marginTop: "0.75rem",
+                      paddingLeft: "1.2rem",
+                      color: "var(--text-2)",
+                      fontSize: "0.94rem",
+                      lineHeight: "1.62",
+                    }}
+                  >
                     {exp.description.map((point, i) => (
-                      <li key={i} style={{ marginBottom: '0.35rem' }}>{point}</li>
+                      <li key={i} style={{ marginBottom: "0.35rem" }}>
+                        {point}
+                      </li>
                     ))}
                   </ul>
                 )}
@@ -615,7 +772,7 @@ function HtmlSections() {
               <div className="project-meta">
                 <div className="tag-row">
                   <span>
-                    <Gem size={14} style={{ marginRight: '4px' }} />
+                    <Gem size={14} style={{ marginRight: "4px" }} />
                     {exp.skill}
                   </span>
                 </div>
@@ -625,12 +782,19 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="projects" eyebrow="04 / Work" title="Selected Projects" wide>
+      <SceneSection
+        id="projects"
+        eyebrow="04 / Work"
+        title="Selected Projects"
+        wide
+      >
         <div className="project-list">
           {PROJECTS.map((project) => (
             <article key={project.title} className="surface project-card">
               <div>
-                {project.award && <span className="award">{project.award}</span>}
+                {project.award && (
+                  <span className="award">{project.award}</span>
+                )}
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
               </div>
@@ -640,7 +804,12 @@ function HtmlSections() {
                     <span key={tag}>{tag}</span>
                   ))}
                 </div>
-                <a href={project.github} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} GitHub`}>
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${project.title} GitHub`}
+                >
                   <Github size={17} />
                 </a>
               </div>
@@ -674,35 +843,51 @@ function HtmlSections() {
         </div>
       </SceneSection>
 
-      <SceneSection id="achievements" eyebrow="06 / Highlights" title="Wins & Milestones">
+      <SceneSection
+        id="achievements"
+        eyebrow="06 / Highlights"
+        title="Wins & Milestones"
+      >
         <div className="achievement-list">
           <article className="surface">
             <span>1st Place</span>
             <h3>KnowBuild '25 - 8-Hour Startup Hackathon</h3>
-            <p>Built WorkFromCafe, a crowdsourced cafe discovery platform for remote workers.</p>
+            <p>
+              Built WorkFromCafe, a crowdsourced cafe discovery platform for
+              remote workers.
+            </p>
           </article>
           <article className="surface">
             <span>Finalist - Top 20 / 400+</span>
             <h3>CodePrix 1.0 - National 24-Hour Hackathon</h3>
-            <p>Advanced through qualifiers and into the national final at ATLAS SkillTech.</p>
+            <p>
+              Advanced through qualifiers and into the national final at ATLAS
+              SkillTech.
+            </p>
           </article>
         </div>
       </SceneSection>
 
       <SceneSection id="interests" eyebrow="07 / Beyond Code" title="Interests">
         <div className="interest-row">
-          {["Football", "Fitness", "Cycling", "Drawing"].map((interest) => (
-            <span key={interest}>{interest}</span>
-          ))}
+          {["Football", "Fitness", "Cycling", "Drawing", "Music"].map(
+            (interest) => (
+              <span key={interest}>{interest}</span>
+            ),
+          )}
         </div>
       </SceneSection>
 
       <SceneSection id="contact" eyebrow="08 / Contact" title="Get In Touch">
         <p className="contact-copy">
-          Open to internships, collaborations, and interesting problems worth building well.
+          Open to internships, collaborations, and interesting problems worth
+          building well.
         </p>
         <div className="hero-actions">
-          <a className="action action-primary" href="mailto:nr14082005@gmail.com">
+          <a
+            className="action action-primary"
+            href="mailto:nr14082005@gmail.com"
+          >
             <Mail size={17} />
             Email Me
           </a>
@@ -718,7 +903,8 @@ function HtmlSections() {
 }
 
 export default function ImmersiveScene() {
-  const { antialias, dpr, lightweight, mobileScene } = useScenePerformanceSettings();
+  const { antialias, dpr, lightweight, mobileScene } =
+    useScenePerformanceSettings();
   const progressRef = useScrollProgress();
 
   return (
@@ -733,7 +919,11 @@ export default function ImmersiveScene() {
           resize={{ scroll: false, debounce: { scroll: 120, resize: 0 } }}
           style={{ background: "#050505" }}
         >
-          <Experience lightweight={lightweight} mobileScene={mobileScene} progressRef={progressRef} />
+          <Experience
+            lightweight={lightweight}
+            mobileScene={mobileScene}
+            progressRef={progressRef}
+          />
         </Canvas>
       </div>
       <HtmlSections />
