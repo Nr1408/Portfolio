@@ -124,6 +124,7 @@ const SEMESTERS = [
   { label: "Sem 3", value: 9.45 },
   { label: "Sem 4", value: 9.64 },
   { label: "Sem 5", value: 9.14 },
+  { label: "Sem 6", value: 9 },
 ];
 
 const CAMERA_POINTS: Vec3[] = [
@@ -567,7 +568,7 @@ function HtmlSections() {
       <SceneSection id="about" eyebrow="01 / About" title="Built For Real Use">
         <div className="copy-block">
           <p>
-            I am a third-year Computer Science student who enjoys turning rough ideas into usable products.
+            I am a fourth-year Computer Science student who enjoys turning rough ideas into usable products.
             My work spans full-stack apps, mobile experiences, and machine learning prototypes.
           </p>
           <p>
@@ -665,6 +666,7 @@ function HtmlSections() {
             </div>
           ))}
         </div>
+        <p className="cgpa-average">Average of 6 semesters: 8.77</p>
         <div className="surface education-block compact">
           <h3>SKKES English High School & Junior College</h3>
           <p>Higher Secondary Certificate</p>
