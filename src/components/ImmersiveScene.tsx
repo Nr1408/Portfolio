@@ -29,7 +29,7 @@ type SceneSettings = {
 };
 
 const RESUME =
-  "https://drive.google.com/file/d/1bK6tg-DlGy05Oo_PVMhPt0FzWfb0QloS/view?usp=sharing";
+  "https://drive.google.com/file/d/1aF-xhIi4Uv34TLfClUSLdvLZmTVWa3_v/view?usp=sharing";
 const GH_URL = "https://github.com/Nr1408";
 const LI_URL = "https://www.linkedin.com/in/nishit-rajput-0a12a5320/";
 
@@ -73,13 +73,13 @@ const EXPERIENCE = [
 ];
 
 const SKILLS = [
-  { label: "Languages", items: ["JavaScript", "TypeScript", "Python"] },
-  { label: "Frontend", items: ["React", "Next.js", "Tailwind", "HTML", "CSS"] },
+  { label: "Languages", items: ["SQL", "Python"] },
+  { label: "Frontend", items: ["HTML","Tailwind","CSS"] },
   { label: "Backend", items: ["FastAPI", "Django"] },
   { label: "Mobile", items: ["Capacitor", "React Native"] },
-  { label: "Database", items: ["PostgreSQL", "Firebase", "Supabase"] },
-  { label: "AI / ML", items: ["TensorFlow", "Keras", "CNNs"] },
-  { label: "Tools", items: ["Git", "Linux", "VS Code"] },
+  { label: "Database", items: ["PostgreSQL", "Firebase", "Supabase", "MySQL"] },
+  { label: "AI / ML", items: ["TensorFlow", "Keras", "CNNs","Pytorch"] },
+  { label: "Tools", items: ["Git", "Power BI", "Linux", "MS 365"] },
 ];
 
 const PROJECTS = [
@@ -838,7 +838,7 @@ function HtmlSections() {
         <p className="cgpa-average">Average of 6 semesters: 8.77</p>
         <div className="surface education-block compact">
           <h3>SKKES English High School & Junior College</h3>
-          <p>Higher Secondary Certificate</p>
+          <p>Higher Secondary School</p>
           <span>Completed April 2023, Mumbai</span>
         </div>
       </SceneSection>
