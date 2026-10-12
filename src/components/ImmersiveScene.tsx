@@ -29,7 +29,7 @@ type SceneSettings = {
 };
 
 const RESUME =
-  "https://drive.google.com/file/d/1aF-xhIi4Uv34TLfClUSLdvLZmTVWa3_v/view?usp=sharing";
+  "https://drive.google.com/file/d/1r4ajuzyi-jC5lB-SfpHgtvRKwSbpagaw/view?usp=drive_link";
 const GH_URL = "https://github.com/Nr1408";
 const LI_URL = "https://www.linkedin.com/in/nishit-rajput-0a12a5320/";
 
