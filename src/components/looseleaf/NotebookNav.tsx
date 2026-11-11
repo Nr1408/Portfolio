@@ -35,6 +35,12 @@ export function NotebookNav({
     { id: "chalkboard", label: "Chalk", icon: "🌙" },
   ];
 
+  const cycleTheme = () => {
+    const currentIndex = themes.findIndex((t) => t.id === currentTheme);
+    const nextTheme = themes[(currentIndex + 1) % themes.length].id;
+    onThemeChange(nextTheme);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY + 220;
@@ -55,7 +61,7 @@ export function NotebookNav({
   return (
     <header className="sticky top-0 z-50 w-full max-w-full backdrop-blur-md bg-[#fbf9f4]/95 dark:bg-[#181615]/95 border-b-2 border-[#1c1917] dark:border-stone-700 shadow-[0_3px_0px_rgba(28,25,23,0.15)] transition-colors duration-200 overflow-x-clip">
       {/* Top seamless repeating notebook spiral binding wire */}
-      <div className="h-2.5 w-full bg-stone-200 dark:bg-stone-800 border-b border-stone-300 dark:border-stone-700 overflow-hidden relative">
+      <div className="h-2 sm:h-2.5 w-full bg-stone-200 dark:bg-stone-800 border-b border-stone-300 dark:border-stone-700 overflow-hidden relative">
         <div
           className="w-full h-full opacity-65"
           style={{
@@ -67,19 +73,19 @@ export function NotebookNav({
       </div>
 
       {/* Main Full-Width Header Bar */}
-      <div className="w-full max-w-full px-3 sm:px-5 md:px-6 lg:px-8 xl:px-10 h-15 sm:h-16 flex items-center justify-between gap-2 sm:gap-3 lg:gap-4 box-border">
+      <div className="w-full max-w-full px-2.5 sm:px-5 md:px-6 lg:px-8 xl:px-10 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3 lg:gap-4 box-border">
         {/* Left: Logo & Brand */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <a
             href="#hero"
-            className="flex items-center gap-2 group font-hand text-xl sm:text-2xl font-black text-stone-900 dark:text-stone-100 hover:text-amber-700 dark:hover:text-amber-400 transition-colors shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2 group font-hand text-lg sm:text-2xl font-black text-stone-900 dark:text-stone-100 hover:text-amber-700 dark:hover:text-amber-400 transition-colors shrink-0"
           >
-            <span className="inline-block transform -rotate-3 group-hover:rotate-0 transition-transform bg-[#fef08a] dark:bg-amber-400 text-stone-950 px-2 sm:px-2.5 py-0.5 rounded-[255px_15px_225px_15px/15px_225px_15px_255px] border-2 border-stone-900 shadow-[2px_2px_0px_#1c1917] font-bold text-base sm:text-lg">
+            <span className="inline-block transform -rotate-3 group-hover:rotate-0 transition-transform bg-[#fef08a] dark:bg-amber-400 text-stone-950 px-1.5 sm:px-2.5 py-0.5 rounded-[255px_15px_225px_15px/15px_225px_15px_255px] border-2 border-stone-900 shadow-[1.5px_1.5px_0px_#1c1917] font-bold text-sm sm:text-lg">
               NR
             </span>
             <div className="flex flex-col">
-              <span className="tracking-tight leading-none whitespace-nowrap">
-                Nishit Rajput
+              <span className="tracking-tight leading-none whitespace-nowrap font-bold text-base sm:text-xl">
+                Nishit<span className="hidden sm:inline"> Rajput</span>
               </span>
               <span className="hidden md:inline-block text-[11px] font-mono text-stone-500 dark:text-stone-400 font-normal mt-0.5 leading-none whitespace-nowrap">
                 CS Student · Full-Stack Dev
@@ -88,7 +94,7 @@ export function NotebookNav({
           </a>
         </div>
 
-        {/* Center: Notebook Index Divider Tabs (Responsive and non-overflowing) */}
+        {/* Center: Notebook Index Divider Tabs (Desktop only) */}
         <nav
           aria-label="Notebook Sections"
           className="hidden lg:flex items-end justify-center gap-1 xl:gap-1.5 2xl:gap-2 font-hand min-w-0 shrink flex-1 h-full pt-2"
@@ -118,10 +124,21 @@ export function NotebookNav({
           })}
         </nav>
 
-        {/* Right: Theme Switcher + Resume Button + Mobile Toggle */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto lg:ml-0">
-          {/* Paper Theme Selector */}
-          <div className="flex items-center bg-stone-200/90 dark:bg-stone-800 p-0.5 sm:p-1 rounded-md border-2 border-stone-800 dark:border-stone-600 text-xs font-hand shadow-[1.5px_1.5px_0px_#1c1917] dark:shadow-[1.5px_1.5px_0px_#444] shrink-0">
+        {/* Right: Theme Switcher + Resume Button + Mobile Menu */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 ml-auto lg:ml-0">
+          {/* Mobile Theme Toggle (compact 1-tap cycle button on < sm screens) */}
+          <button
+            onClick={cycleTheme}
+            title={`Paper: ${currentTheme}. Tap to cycle theme!`}
+            className="sm:hidden flex items-center gap-1 px-2 py-1 rounded-md border-2 border-stone-800 dark:border-stone-600 bg-stone-200/90 dark:bg-stone-800 text-xs font-hand font-bold shadow-[1.5px_1.5px_0px_#1c1917] active:scale-95 shrink-0"
+          >
+            <span>{themes.find((t) => t.id === currentTheme)?.icon}</span>
+            <span className="text-[11px] font-hand capitalize">{currentTheme}</span>
+            <span className="text-[9px] opacity-60">▾</span>
+          </button>
+
+          {/* Desktop/Tablet 4-Theme Selector (sm and up) */}
+          <div className="hidden sm:flex items-center bg-stone-200/90 dark:bg-stone-800 p-0.5 sm:p-1 rounded-md border-2 border-stone-800 dark:border-stone-600 text-xs font-hand shadow-[1.5px_1.5px_0px_#1c1917] dark:shadow-[1.5px_1.5px_0px_#444] shrink-0">
             {themes.map((t) => {
               const isSelected = currentTheme === t.id;
               return (
@@ -136,7 +153,6 @@ export function NotebookNav({
                   }`}
                 >
                   <span className="text-sm sm:text-xs">{t.icon}</span>
-                  {/* Show text label only on active theme or very wide screens to prevent overflow */}
                   {isSelected && (
                     <span className="hidden xl:inline text-xs font-hand">
                       {t.label}
@@ -147,7 +163,7 @@ export function NotebookNav({
             })}
           </div>
 
-          {/* Resume Download Button (Guaranteed visible and shrink-proof) */}
+          {/* Resume Download Button (Shrink-proof and perfectly sized for mobile) */}
           <div className="shrink-0 flex items-center">
             <LooseleafButton
               variant="marker"
@@ -155,9 +171,9 @@ export function NotebookNav({
               href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 whitespace-nowrap"
+              className="h-8 px-2 sm:px-3 text-xs gap-1 shrink-0 whitespace-nowrap shadow-[2px_2px_0px_#1c1917]"
             >
-              <Download size={14} />
+              <Download size={13} />
               <span>Resume</span>
             </LooseleafButton>
           </div>
@@ -165,24 +181,23 @@ export function NotebookNav({
           {/* Mobile Menu Toggle Button (Visible on screens < lg) */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden p-1.5 rounded-md border-2 border-stone-900 dark:border-stone-200 bg-[#fef08a] dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-hand text-xs font-bold shadow-[1.5px_1.5px_0px_#1c1917] flex items-center gap-1 active:translate-x-0.5 active:translate-y-0.5 shrink-0"
+            className="lg:hidden h-8 w-8 rounded-md border-2 border-stone-900 dark:border-stone-200 bg-[#fef08a] dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-hand text-xs font-bold shadow-[1.5px_1.5px_0px_#1c1917] flex items-center justify-center active:translate-x-0.5 active:translate-y-0.5 shrink-0"
             aria-label="Toggle Navigation Index"
           >
             {menuOpen ? <X size={15} /> : <Menu size={15} />}
-            <span className="hidden xs:inline">{menuOpen ? "Close" : "Index"}</span>
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer (Visible on smaller viewports when opened) */}
       {menuOpen && (
-        <div className="lg:hidden px-4 py-4 bg-[#fbf9f4] dark:bg-[#181615] border-t-2 border-stone-900 dark:border-stone-700 shadow-xl space-y-4">
+        <div className="lg:hidden px-4 py-4 bg-[#fbf9f4] dark:bg-[#181615] border-t-2 border-stone-900 dark:border-stone-700 shadow-xl space-y-4 animate-in slide-in-from-top-2 duration-200">
           <div className="flex items-center justify-between border-b border-dashed border-stone-400 pb-2">
             <span className="font-hand font-bold text-sm text-stone-700 dark:text-stone-300">
               📌 Notebook Sections
             </span>
             <span className="font-mono text-xs text-stone-500">
-              Select to Jump
+              Jump to Section
             </span>
           </div>
 
@@ -200,6 +215,31 @@ export function NotebookNav({
                 {sec.label}
               </a>
             ))}
+          </div>
+
+          {/* Paper Theme Picker in Mobile Drawer */}
+          <div className="pt-2 border-t border-dashed border-stone-400">
+            <span className="font-hand font-bold text-xs text-stone-600 dark:text-stone-400 block mb-2">
+              🎨 Paper Texture:
+            </span>
+            <div className="grid grid-cols-4 gap-1.5 font-hand text-xs">
+              {themes.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => {
+                    onThemeChange(t.id);
+                  }}
+                  className={`py-1.5 px-1 rounded border-2 border-stone-900 font-bold flex flex-col items-center justify-center gap-0.5 ${
+                    currentTheme === t.id
+                      ? "bg-amber-200 dark:bg-amber-900 shadow-[2px_2px_0px_#1c1917]"
+                      : "bg-white dark:bg-stone-800"
+                  }`}
+                >
+                  <span className="text-base">{t.icon}</span>
+                  <span className="text-[10px]">{t.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="pt-2 border-t border-dashed border-stone-400 flex flex-col gap-2">
