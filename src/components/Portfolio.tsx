@@ -1056,18 +1056,6 @@ export default function Portfolio() {
               </div>
             </div>
           </Paper>
-
-          {/* Footer note */}
-          <div className="mt-12 text-center font-hand text-sm text-stone-600 dark:text-stone-400 flex flex-col items-center justify-center gap-1.5">
-            <div className="flex items-center gap-2">
-              <StarDrawn size={16} color="#eab308" />
-              <span>Designed with the Looseleaf hand-drawn notebook design system</span>
-              <StarDrawn size={16} color="#eab308" />
-            </div>
-            <p className="font-mono text-xs opacity-75">
-              © 2026 Nishit Rajput · Handcrafted with React 19, TypeScript & Tailwind CSS
-            </p>
-          </div>
         </section>
       </main>
     </div>
