@@ -1,5 +1,5 @@
-import ImmersiveScene from "./components/ImmersiveScene";
+import Portfolio from "./components/Portfolio";
 
 export default function App() {
-  return <ImmersiveScene />;
+  return <Portfolio />;
 }

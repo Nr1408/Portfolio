@@ -4,27 +4,47 @@ This document provides an overview of the project structure for developers and A
 
 ## Project Overview
 
-Personal portfolio site for **Nishit Rajput** — a dark-themed, single-page developer portfolio with animated sections. Built with TanStack Start (React SSR) and deployed on Netlify.
+Personal portfolio site for **Nishit Rajput** — a hand-drawn tactile developer portfolio following the **Looseleaf** notebook UI design system (inspired by `kevintngo/looseleaf`). Built with React 19, Vite 7, and Tailwind CSS v4.
 
-All portfolio content lives in **`src/routes/index.tsx`** as hardcoded React components. There is no CMS or content-collections usage — content is updated directly in that file.
+All portfolio content lives in **`src/components/Portfolio.tsx`** and its companion Looseleaf components in **`src/components/looseleaf/`**.
 
-### Design System
+### Design System (Looseleaf Hand-Drawn Notebook)
 
-- **Theme**: Near-black background (`#09090f`) with electric cyan (`#00d4ff`) accent and indigo (`#818cf8`) secondary
-- **Font**: Space Grotesk (display + body) + DM Mono (labels, code)
-- **Cards**: `.glass-card` CSS class — glassmorphism with `backdrop-filter: blur(12px)`
-- **Animations**: CSS `@keyframes` + `IntersectionObserver` (no Framer Motion)
-- **Particles**: Canvas-based particle network in `<ParticleCanvas>` component
+- **Aesthetic**: Authentic tactile notebook paper desk with organic wobbly borders, ink offset shadows, washi tape, paper clips, pushpins, highlighter strokes, and rubber stamps.
+- **Paper Themes**:
+  - 📝 **Lined Paper** (`bg-paper-lined`): Ruled notebook sheets with red margin line
+  - 📐 **Graph Paper** (`bg-paper-grid`): Technical math/blueprint grid
+  - 📦 **Kraft Paper** (`bg-paper-kraft`): Organic cardstock desk texture
+  - 🌙 **Midnight Chalkboard** (`bg-paper-chalkboard`): Dark chalkboard with chalk sketches
+- **Fonts**:
+  - `Architects Daughter` (`font-hand`): Architectural handwriting for headings, stamps, stickers
+  - `Caveat` (`font-script`): Flowing cursive handwriting for doodles & margin annotations
+  - `Patrick Hand` (`font-casual`): Friendly handwriting
+  - `Space Grotesk` (`font-sans`): Clean, ultra-readable display for long paragraphs
+  - `DM Mono` (`font-mono`): Monospace typewriter tags and timestamps
+- **Components (`src/components/looseleaf/`)**:
+  - `Paper.tsx`: Base paper sheets (lined, grid, kraft, chalkboard) with spiral holes
+  - `Tape.tsx`: Washi tape strips with torn zigzag edges, transparency, and patterns
+  - `Fasteners.tsx`: Paperclip, Pushpin, Staple, BinderClip SVGs
+  - `Stamp.tsx`: Distressed rubber stamps (Winner, Open to Work, Verified, CGPA)
+  - `StickyNote.tsx`: Post-it notes in pastel tones (yellow, pink, cyan, green, orange, lavender) with tilt and curl
+  - `LooseleafButton.tsx`: Marker, highlighter, secondary, and outline buttons with tactile click sink
+  - `LooseleafCard.tsx`: Hand-drawn cards with sketch borders and pencil rule dividers
+  - `NotebookNav.tsx`: Sticky notebook binder tab navigation bar with paper theme switcher
+  - `DoodleScratchpad.tsx`: Interactive sticky note where visitors can doodle in real-time
+  - `Doodles.tsx`: Hand-drawn SVG arrows, stars, underlines, circles, brackets, lightbulbs, coffee ring
 
 ### Content Update Guide
 
 | What to update | Where |
 |---|---|
-| Profile photo | `/public/headshot-on-white.jpg` |
-| Resume download link | `href` on "Download Resume" in `Hero` component |
-| GitHub / LinkedIn URLs | `href` on social icon anchors in `Hero` and `Contact` |
-| Project details | `projects` array in `Projects` component |
-| CGPA values | `semesters` array in `Education` component |
+| Profile photo | `/public/nishit-profile.jpg` |
+| Resume download link | `RESUME` constant in `src/components/Portfolio.tsx` |
+| GitHub / LinkedIn URLs | `GH_URL` and `LI_URL` in `src/components/Portfolio.tsx` |
+| Work Experience | `EXPERIENCE` array in `src/components/Portfolio.tsx` |
+| Skills | `SKILLS` array in `src/components/Portfolio.tsx` |
+| Project details | `PROJECTS` array in `src/components/Portfolio.tsx` |
+| CGPA values | `SEMESTERS` array in `src/components/Portfolio.tsx` |
 
 ### Tech Stack
 
